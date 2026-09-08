@@ -17,10 +17,10 @@ import java.util.UUID;
 @Builder
 public class OrderDTOInput {
 
-    @NotNull
+    @NotNull(message = "campo obligatorio obbligatorio")
     private UUID userId;
 
-    @NotEmpty
+    @NotEmpty(message = "campo obligatorio obbligatorio")
     @Valid
     private List<OrderItemDTOInput> items;
 }

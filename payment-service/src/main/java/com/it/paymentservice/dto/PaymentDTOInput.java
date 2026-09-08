@@ -17,13 +17,13 @@ import java.util.UUID;
 @Builder
 public class PaymentDTOInput {
 
-    @NotNull
+    @NotNull (message = "campo obligatorio obbligatorio")
     private UUID orderId;
 
-    @NotNull
+    @NotNull (message = "campo obligatorio obbligatorio")
     @DecimalMin(value = "0.01")
     private BigDecimal importo;
 
-    @NotBlank
+    @NotBlank (message = "campo obligatorio obbligatorio")
     private String metodoPagamento;
 }

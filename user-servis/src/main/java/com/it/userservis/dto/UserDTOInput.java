@@ -1,5 +1,6 @@
 package com.it.userservis.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,16 +13,17 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserDTOInput {
 
-    @NotBlank
+    @NotBlank(message = "campo obligatorio obbligatorio")
     private String nome;
 
-    @NotBlank
+    @NotBlank(message = "campo obligatorio obbligatorio")
     private String cognome;
 
-    @NotBlank
+    @NotBlank(message = "campo obligatorio obbligatorio")
+    @Email(message = "L'email non è valida")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "campo obligatorio obbligatorio")
     private String indirizzo;
 
 }
