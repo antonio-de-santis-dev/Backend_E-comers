@@ -15,10 +15,10 @@ import java.util.UUID;
 @Builder
 public class OrderItemDTOInput {
 
-    @NotNull (message = "campo obligatorio obbligatorio")
+    @NotNull (message = "campo obbligatorio")
     private UUID productId;
 
-    @NotNull (message = "campo obligatorio obbligatorio")
-    @Min(1)
+    @NotNull (message = "campo obbligatorio")
+    @Min(value = 1,message = "la quantia deve essere almeno 1")
     private Integer quantita;
 }

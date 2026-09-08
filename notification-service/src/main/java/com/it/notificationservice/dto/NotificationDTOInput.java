@@ -15,15 +15,15 @@ import java.util.UUID;
 @Builder
 public class NotificationDTOInput {
 
-    @NotNull(message = "campo obligatorio obbligatorio")
+    @NotNull(message = "campo obbligatorio")
     private UUID userId;
 
-    @NotNull(message = "campo obligatorio obbligatorio")
+    @NotNull(message = "campo obbligatorio")
     private UUID orderId;
 
-    @NotBlank(message = "campo obligatorio obbligatorio")
+    @NotBlank(message = "campo obbligatorio")
     private String tipo;
 
-    @NotBlank(message = "campo obligatorio obbligatorio")
+    @NotBlank(message = "campo obbligatorio")
     private String messaggio;
 }
