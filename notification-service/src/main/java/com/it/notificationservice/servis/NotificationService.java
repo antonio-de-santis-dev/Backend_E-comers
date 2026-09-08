@@ -3,6 +3,7 @@ package com.it.notificationservice.servis;
 import com.it.notificationservice.dto.NotificationDTOInput;
 import com.it.notificationservice.dto.NotificationDTOOutput;
 import com.it.notificationservice.entity.Notification;
+import com.it.notificationservice.exception.ResourceNotFoundException;
 import com.it.notificationservice.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class NotificationService {
         Notification notification =
                 notificationRepository.findById(id)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new ResourceNotFoundException(
                                         "Notifica non trovata: " + id
                                 )
                         );
@@ -61,7 +62,7 @@ public class NotificationService {
         Notification notification =
                 notificationRepository.findById(id)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new ResourceNotFoundException(
                                         "Notifica non trovata: " + id
                                 )
                         );
@@ -82,7 +83,7 @@ public class NotificationService {
         Notification notification =
                 notificationRepository.findById(id)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new ResourceNotFoundException(
                                         "Notifica non trovata: " + id
                                 )
                         );

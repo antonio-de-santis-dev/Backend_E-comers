@@ -6,6 +6,7 @@ import com.it.orderservis.dto.OrderItemDTOInput;
 import com.it.orderservis.dto.OrderItemDTOOutput;
 import com.it.orderservis.entity.Order;
 import com.it.orderservis.entity.OrderItem;
+import com.it.orderservis.exception.ResourceNotFoundException;
 import com.it.orderservis.repository.OrderItemRepository;
 import com.it.orderservis.repository.OrderRepository;
 import jakarta.validation.Valid;
@@ -64,7 +65,7 @@ public class OrderService {
     public OrderDTOOutput getOrderById(UUID id) {
 
         Order order = orderRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Ordine con id: ("+id +") non trtovato"));
+                .orElseThrow(()-> new ResourceNotFoundException("Ordine con id: ("+id +") non trtovato"));
         return convertToDTO(order);
     }
 
@@ -72,7 +73,7 @@ public class OrderService {
 
         Order order = orderRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Ordine non trovato: " + id)
+                        new ResourceNotFoundException("Ordine non trovato: " + id)
                 );
 
         orderRepository.delete(order);

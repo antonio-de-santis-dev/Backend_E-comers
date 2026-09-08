@@ -3,6 +3,7 @@ package com.it.productservis.servis;
 import com.it.productservis.dto.ProductDTOInput;
 import com.it.productservis.dto.ProductDTOOutput;
 import com.it.productservis.entity.Product;
+import com.it.productservis.exception.ResourceNotFoundException;
 import com.it.productservis.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,13 +42,13 @@ public class ProductServis {
 
     public ProductDTOOutput findById(UUID id) {
          Product product= prouctRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prodotto non trovato id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato id: " + id));
         return convertToDTO(product);
     }
 
     public ProductDTOOutput update(UUID id,ProductDTOInput dto) {
         Product product= prouctRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prodotto non trovato id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato id: " + id));
 
         product.setNome(dto.getNome());
         product.setDescrizione(dto.getDescrizione());
@@ -63,7 +64,7 @@ public class ProductServis {
 
     public void delete(UUID id) {
         Product product= prouctRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prodotto non trovato id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato id: " + id));
 
         prouctRepository.delete(product);
     }

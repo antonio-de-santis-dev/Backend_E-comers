@@ -3,6 +3,7 @@ package com.it.paymentservice.servis;
 import com.it.paymentservice.dto.PaymentDTOInput;
 import com.it.paymentservice.dto.PaymentDTOOutput;
 import com.it.paymentservice.entity.Payment;
+import com.it.paymentservice.exception.ResourceNotFoundException;
 import com.it.paymentservice.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class PaymentServis {
 
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Pagamento non trovato: " + id)
+                        new ResourceNotFoundException("Pagamento non trovato: " + id)
                 );
 
         return convertToDTO(payment);
@@ -54,7 +55,7 @@ public class PaymentServis {
 
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Pagamento non trovato: " + id)
+                        new ResourceNotFoundException("Pagamento non trovato: " + id)
                 );
 
         payment.setOrderId(input.getOrderId());
@@ -70,7 +71,7 @@ public class PaymentServis {
 
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Pagamento non trovato: " + id)
+                        new ResourceNotFoundException("Pagamento non trovato: " + id)
                 );
 
         paymentRepository.delete(payment);

@@ -41,13 +41,13 @@ public class UserServis {
 
     public UserDTOOutput findById(UUID id) {
         User user =  userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato nel sistema  id: "+id));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente_non_trovato_nel_sistema_id= "+id));
         return convertToDTO(user);
     }
 
     public UserDTOOutput update(UUID id,UserDTOInput dto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato nel sistema  id: "+id));;
+                .orElseThrow(() -> new ResourceNotFoundException("Utente_non_trovato_nel_sistema_id= "+id));;
 
         user.setNome(dto.getNome());
         user.setCognome(dto.getCognome());
@@ -62,7 +62,7 @@ public class UserServis {
     public void delete(UUID id) {
 
         User user =  userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato nel sistema  id: "+id));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente_non_trovato_nel_sistema_id= "+id));
 
         userRepository.delete(user);
     }
