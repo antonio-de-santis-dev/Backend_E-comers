@@ -7,6 +7,7 @@ import com.it.productservis.exception.ResourceNotFoundException;
 import com.it.productservis.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,7 @@ public class ProductServis {
 
     private final ProductRepository prouctRepository;
 
+    @Transactional
     public ProductDTOOutput saved(ProductDTOInput dto) {
 
         Product product = Product.builder()
@@ -32,6 +34,7 @@ public class ProductServis {
         return convertToDTO(savedProduct);
     }
 
+    @Transactional(readOnly = true)
     public  List<ProductDTOOutput>  findAll() {
 
         return prouctRepository.findAll()
@@ -39,13 +42,13 @@ public class ProductServis {
                 .map(this::convertToDTO)
                 .toList();
     }
-
+    @Transactional(readOnly = true)
     public ProductDTOOutput findById(UUID id) {
          Product product= prouctRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato id: " + id));
         return convertToDTO(product);
     }
-
+    @Transactional
     public ProductDTOOutput update(UUID id,ProductDTOInput dto) {
         Product product= prouctRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato id: " + id));
@@ -61,7 +64,7 @@ public class ProductServis {
 
         return convertToDTO(updateProduct);
     }
-
+    @Transactional
     public void delete(UUID id) {
         Product product= prouctRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato id: " + id));

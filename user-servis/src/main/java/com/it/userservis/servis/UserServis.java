@@ -1,5 +1,6 @@
 package com.it.userservis.servis;
 
+import org.springframework.transaction.annotation.Transactional;
 import com.it.userservis.dto.UserDTOInput;
 import com.it.userservis.dto.UserDTOOutput;
 import com.it.userservis.entity.User;
@@ -18,6 +19,7 @@ public class UserServis {
     private final UserRepository userRepository;
 
 
+    @Transactional
     public UserDTOOutput saved(UserDTOInput dto) {
         User user = User.builder()
                 .nome(dto.getNome())
@@ -31,6 +33,7 @@ public class UserServis {
         return convertToDTO(savedUser);
     }
 
+    @Transactional(readOnly = true)
     public List<UserDTOOutput> findAll() {
 
         return userRepository.findAll()
@@ -38,13 +41,13 @@ public class UserServis {
                 .map(this::convertToDTO)
                 .toList();
     }
-
+    @Transactional(readOnly = true)
     public UserDTOOutput findById(UUID id) {
         User user =  userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Utente_non_trovato_nel_sistema_id= "+id));
         return convertToDTO(user);
     }
-
+    @Transactional
     public UserDTOOutput update(UUID id,UserDTOInput dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Utente_non_trovato_nel_sistema_id= "+id));;
@@ -58,7 +61,7 @@ public class UserServis {
 
         return convertToDTO(updateUser);
     }
-
+    @Transactional
     public void delete(UUID id) {
 
         User user =  userRepository.findById(id)

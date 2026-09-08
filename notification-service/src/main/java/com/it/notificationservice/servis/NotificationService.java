@@ -7,6 +7,7 @@ import com.it.notificationservice.exception.ResourceNotFoundException;
 import com.it.notificationservice.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-
+    @Transactional
     public NotificationDTOOutput createNotification( NotificationDTOInput input) {
 
         Notification notification = Notification.builder()
@@ -35,7 +36,7 @@ public class NotificationService {
 
         return convertToDTO(savedNotification);
     }
-
+    @Transactional(readOnly = true)
     public List<NotificationDTOOutput> getAllNotifications() {
 
         return notificationRepository.findAll()
@@ -43,7 +44,7 @@ public class NotificationService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-
+    @Transactional(readOnly = true)
     public NotificationDTOOutput getNotificationById(UUID id) {
 
         Notification notification =
@@ -56,7 +57,7 @@ public class NotificationService {
 
         return convertToDTO(notification);
     }
-
+    @Transactional
     public NotificationDTOOutput updateNotification( UUID id, NotificationDTOInput input) {
 
         Notification notification =
@@ -77,7 +78,7 @@ public class NotificationService {
 
         return convertToDTO(updatedNotification);
     }
-
+    @Transactional
     public void deleteNotification(UUID id) {
 
         Notification notification =

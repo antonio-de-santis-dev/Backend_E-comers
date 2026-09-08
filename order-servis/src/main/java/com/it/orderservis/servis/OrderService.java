@@ -12,6 +12,7 @@ import com.it.orderservis.repository.OrderRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,7 +27,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
 
-
+    @Transactional
     public OrderDTOOutput createOrder(OrderDTOInput input) {
 
         Order order = Order.builder()
@@ -53,7 +54,7 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
         return convertToDTO(savedOrder);
     }
-
+    @Transactional(readOnly = true)
     public List<OrderDTOOutput> getAllOrders() {
         return orderRepository.findAll()
                 .stream()
@@ -61,14 +62,14 @@ public class OrderService {
                 .collect(Collectors.toList());
 
     }
-
+    @Transactional(readOnly = true)
     public OrderDTOOutput getOrderById(UUID id) {
 
         Order order = orderRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Ordine con id: ("+id +") non trtovato"));
         return convertToDTO(order);
     }
-
+    @Transactional
     public void deleteOrder(UUID id) {
 
         Order order = orderRepository.findById(id)

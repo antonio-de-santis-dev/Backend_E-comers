@@ -7,6 +7,7 @@ import com.it.paymentservice.exception.ResourceNotFoundException;
 import com.it.paymentservice.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PaymentServis {
     private final PaymentRepository paymentRepository;
-
+    @Transactional
     public PaymentDTOOutput createPayment(PaymentDTOInput input) {
 
         Payment payment = Payment.builder()
@@ -32,7 +33,7 @@ public class PaymentServis {
 
         return convertToDTO(savedPayment);
     }
-
+    @Transactional(readOnly = true)
     public List<PaymentDTOOutput> getAllPayments() {
 
         return paymentRepository.findAll()
@@ -40,7 +41,7 @@ public class PaymentServis {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-
+    @Transactional(readOnly = true)
     public PaymentDTOOutput getPaymentById(UUID id) {
 
         Payment payment = paymentRepository.findById(id)
@@ -50,7 +51,7 @@ public class PaymentServis {
 
         return convertToDTO(payment);
     }
-
+    @Transactional
     public PaymentDTOOutput updatePayment( UUID id, PaymentDTOInput input) {
 
         Payment payment = paymentRepository.findById(id)
@@ -66,7 +67,7 @@ public class PaymentServis {
 
         return convertToDTO(updatedPayment);
     }
-
+    @Transactional
     public void deletePayment(UUID id) {
 
         Payment payment = paymentRepository.findById(id)
