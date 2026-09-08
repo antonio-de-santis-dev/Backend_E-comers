@@ -1,5 +1,8 @@
 package com.it.productservis.exception;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,11 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
-
-    // ============================================================
-    // 404 - RISORSA NON TROVATA
-    // ============================================================
-
+    //404 - Risorsa Non Trovata
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(
             ResourceNotFoundException exception,
@@ -43,22 +42,17 @@ public class GlobalExceptionHandler {
                 exception.getMessage(),
                 request.getRequestURI()
         );
-
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(errorResponse);
     }
 
-
-    // ============================================================
-    // 400 - VALIDAZIONE
-    // ============================================================
-
+    //400 - Errori di validazione @Valid
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidationErrors(
+    public ResponseEntity <ValidationErrorResponse> handleValidationErrors(
             MethodArgumentNotValidException exception,
-            HttpServletRequest request) {
-
+            HttpServletRequest request
+    ){
         Map<String, String> errors = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -89,16 +83,12 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
-
-    // ============================================================
-    // 400 - JSON MALFORMATO
-    // ============================================================
-
+    // 400 - Json Malformato
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleMessageNotReadable(
+    public ResponseEntity<ErrorResponse> handleMessageNotReadable (
             HttpMessageNotReadableException exception,
-            HttpServletRequest request) {
-
+            HttpServletRequest request
+    ){
         log.warn(
                 "Richiesta non leggibile: path={}",
                 request.getRequestURI()
@@ -108,7 +98,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "Il formato della richiesta non è valido",
+                "Il formato della richiesta non e valido",
                 request.getRequestURI()
         );
 
@@ -117,16 +107,12 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
-
-    // ============================================================
-    // 400 - TIPO PARAMETRO ERRATO
-    // ============================================================
-
+    // 400 - Parametro con tipo errato
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(
             MethodArgumentTypeMismatchException exception,
-            HttpServletRequest request) {
-
+            HttpServletRequest request
+    ){
         log.warn(
                 "Parametro non valido: {} - valore: {} - path: {}",
                 exception.getName(),
@@ -134,11 +120,11 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
-        ErrorResponse errorResponse = new ErrorResponse(
+        ErrorResponse errorResponse =  new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "Il parametro della richiesta non è valido",
+                "Il parametro della richiesta non è valida",
                 request.getRequestURI()
         );
 
@@ -147,15 +133,12 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
-
-    // ============================================================
-    // 405 - METODO HTTP NON SUPPORTATO
-    // ============================================================
-
+    // 405 - Metodo HTTP non supportato
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleMethodNotSupported(
+    public ResponseEntity<ErrorResponse> handleMthodNotSupported(
             HttpRequestMethodNotSupportedException exception,
-            HttpServletRequest request) {
+            HttpServletRequest request
+    ){
 
         log.warn(
                 "Metodo HTTP non supportato: {} - path: {}",
@@ -176,15 +159,11 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
-
-    // ============================================================
-    // 409 - DATABASE / VINCOLI
-    // ============================================================
-
+    //409 - Violazione vincolo database
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
             DataIntegrityViolationException exception,
-            HttpServletRequest request) {
+            HttpServletRequest request){
 
         log.warn(
                 "Violazione integrità dati: path={}",
@@ -195,7 +174,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
-                "Operazione non consentita: i dati risultano già presenti o non validi",
+                "Operazione non consetita: i dati risultano già presnti o non valido",
                 request.getRequestURI()
         );
 
@@ -204,15 +183,13 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
-
-    // ============================================================
-    // 500 - ERRORE INTERNO
-    // ============================================================
+    // 500 - Fallback generico
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(
             Exception exception,
-            HttpServletRequest request) {
+            HttpServletRequest request
+    ){
 
         log.error(
                 "Errore interno non gestito: path={}",
@@ -232,4 +209,77 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(errorResponse);
     }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMediaTypeNotSupported(
+            HttpMediaTypeNotSupportedException exception,
+            HttpServletRequest request) {
+
+        log.warn(
+                "Content-Type non supportato: path={}",
+                request.getRequestURI()
+        );
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE.getReasonPhrase(),
+                "Content-Type non supportato",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(
+            NoResourceFoundException exception,
+            HttpServletRequest request) {
+
+        log.warn(
+                "Endpoint non trovato: path={}",
+                request.getRequestURI()
+        );
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                "Endpoint non trovato",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ErrorResponse> handleDataAccessException(
+            DataAccessException exception,
+            HttpServletRequest request) {
+
+        log.error(
+                "Errore di accesso al database: path={}",
+                request.getRequestURI(),
+                exception
+        );
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
+                "Servizio temporaneamente non disponibile",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(errorResponse);
+    }
+
+
+
 }
