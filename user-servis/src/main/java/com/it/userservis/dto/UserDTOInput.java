@@ -13,17 +13,16 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserDTOInput {
 
-    @NotBlank(message = "campo obligatorio obbligatorio")
+    @NotBlank(message = "campo obbligatorio")
     private String nome;
 
-    @NotBlank(message = "campo obligatorio obbligatorio")
+    @NotBlank(message = "campo obbligatorio")
     private String cognome;
 
-    @NotBlank(message = "campo obligatorio obbligatorio")
+    @NotBlank(message = "campo obbligatorio")
     @Email(message = "L'email non è valida")
     private String email;
 
-    @NotBlank(message = "campo obligatorio obbligatorio")
     private String indirizzo;
 
 }

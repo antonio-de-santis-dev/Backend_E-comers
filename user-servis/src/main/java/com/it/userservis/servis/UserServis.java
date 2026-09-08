@@ -62,7 +62,7 @@ public class UserServis {
     public void delete(UUID id) {
 
         User user =  userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Utente_non_trovato_nel_sistema_id= "+id));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato nel sistema id = "+id));
 
         userRepository.delete(user);
     }
