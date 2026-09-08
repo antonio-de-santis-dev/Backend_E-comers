@@ -17,23 +17,23 @@ import java.math.BigDecimal;
 @Builder
 public class ProductDTOInput {
 
-    @NotBlank(message = "campo obligatorio obbligatorio")
+    @NotBlank(message = "campo obbligatorio")
     private String nome;
 
-    @NotBlank(message = "campo obligatorio obbligatorio")
+    @NotBlank(message = "campo obbligatorio")
     private String descrizione;
 
-    @NotNull (message = "campo obligatorio obbligatorio")
-    @DecimalMin(value = "0.0", inclusive = true)
+    @NotNull (message = "campo obbligatorio")
+    @DecimalMin(value = "0.0", message = "Il prezzo non puo esere negativo")
     private BigDecimal prezzo;
 
-    @NotNull(message = "campo obligatorio obbligatorio")
-    @Min(0)
+    @NotNull(message = "campo obbligatorio")
+    @Min(value = 0, message = "La quantità non può essere negativa")
     private Integer quantita;
 
-    @NotBlank(message = "campo obligatorio obbligatorio")
+    @NotBlank(message = "campo obbligatorio")
     private String categoria;
 
-    @NotNull(message = "campo obligatorio obbligatorio")
+    @NotNull(message = "campo obbligatorio")
     private Boolean disponibile;
 }
