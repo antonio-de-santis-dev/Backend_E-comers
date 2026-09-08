@@ -26,7 +26,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
 
 
-    public OrderDTOOutput createOrder(@Valid OrderDTOInput input) {
+    public OrderDTOOutput createOrder(OrderDTOInput input) {
 
         Order order = Order.builder()
                 .userId(input.getUserId())

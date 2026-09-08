@@ -50,9 +50,7 @@ public class PaymentServis {
         return convertToDTO(payment);
     }
 
-    public PaymentDTOOutput updatePayment(
-            UUID id,
-            PaymentDTOInput input) {
+    public PaymentDTOOutput updatePayment( UUID id, PaymentDTOInput input) {
 
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() ->

@@ -17,7 +17,7 @@ public class UserServis {
     private final UserRepository userRepository;
 
 
-    public User saved(@Valid UserDTOInput dto) {
+    public User saved(UserDTOInput dto) {
         User user = User.builder()
                 .nome(dto.getNome())
                 .cognome(dto.getCognome())
@@ -37,7 +37,7 @@ public class UserServis {
 
     }
 
-    public User update(UUID id, @Valid UserDTOInput dto) {
+    public User update(UUID id,UserDTOInput dto) {
         User user = findById(id);
 
         user.setNome(dto.getNome());

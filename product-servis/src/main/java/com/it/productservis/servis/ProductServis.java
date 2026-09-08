@@ -2,8 +2,7 @@ package com.it.productservis.servis;
 
 import com.it.productservis.dto.ProductDTOInput;
 import com.it.productservis.entity.Product;
-import com.it.productservis.repository.ProuctRepository;
-import jakarta.validation.Valid;
+import com.it.productservis.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +13,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductServis {
 
-    private final ProuctRepository prouctRepository;
+    private final ProductRepository prouctRepository;
 
-    public Product saved(@Valid ProductDTOInput dto) {
+    public Product saved(ProductDTOInput dto) {
 
         Product product = Product.builder()
                 .nome(dto.getNome())
@@ -38,7 +37,7 @@ public class ProductServis {
                 .orElseThrow(() -> new RuntimeException("Prodotto non trovato"));
     }
 
-    public Product update(UUID id, @Valid ProductDTOInput dto) {
+    public Product update(UUID id,ProductDTOInput dto) {
         Product product = findById(id);
 
         product.setNome(dto.getNome());

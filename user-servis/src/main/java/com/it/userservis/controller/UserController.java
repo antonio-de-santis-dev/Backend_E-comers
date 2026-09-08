@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping
-    private List<User> findAll(){
+    public List<User> findAll(){
         return userServis.findAll();
     }
 

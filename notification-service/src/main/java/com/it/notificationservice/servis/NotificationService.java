@@ -1,4 +1,4 @@
-package com.it.notificationservice.servise;
+package com.it.notificationservice.servis;
 
 import com.it.notificationservice.dto.NotificationDTOInput;
 import com.it.notificationservice.dto.NotificationDTOOutput;
@@ -18,8 +18,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    public NotificationDTOOutput createNotification(
-            NotificationDTOInput input) {
+    public NotificationDTOOutput createNotification( NotificationDTOInput input) {
 
         Notification notification = Notification.builder()
                 .userId(input.getUserId())
@@ -57,9 +56,7 @@ public class NotificationService {
         return convertToDTO(notification);
     }
 
-    public NotificationDTOOutput updateNotification(
-            UUID id,
-            NotificationDTOInput input) {
+    public NotificationDTOOutput updateNotification( UUID id, NotificationDTOInput input) {
 
         Notification notification =
                 notificationRepository.findById(id)
@@ -93,8 +90,7 @@ public class NotificationService {
         notificationRepository.delete(notification);
     }
 
-    private NotificationDTOOutput convertToDTO(
-            Notification notification) {
+    private NotificationDTOOutput convertToDTO( Notification notification) {
 
         return NotificationDTOOutput.builder()
                 .id(notification.getId())

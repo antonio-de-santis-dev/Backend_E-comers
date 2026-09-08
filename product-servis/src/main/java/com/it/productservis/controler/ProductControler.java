@@ -23,12 +23,12 @@ public class ProductControler {
     }
 
     @GetMapping
-    private List<Product> findAll(){
+    public List<Product> findAll(){
         return productServis.findAll();
     }
 
     @GetMapping("/{id}")
-    private Product findById(@PathVariable UUID id){
+    public Product findById(@PathVariable UUID id){
         return productServis.findById(id);
     }
 

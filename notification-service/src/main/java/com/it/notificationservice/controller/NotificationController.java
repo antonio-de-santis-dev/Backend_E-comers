@@ -2,7 +2,7 @@ package com.it.notificationservice.controller;
 
 import com.it.notificationservice.dto.NotificationDTOInput;
 import com.it.notificationservice.dto.NotificationDTOOutput;
-import com.it.notificationservice.servise.NotificationService;
+import com.it.notificationservice.servis.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
