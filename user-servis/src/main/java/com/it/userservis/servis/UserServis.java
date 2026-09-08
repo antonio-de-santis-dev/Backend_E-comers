@@ -1,9 +1,10 @@
 package com.it.userservis.servis;
 
 import com.it.userservis.dto.UserDTOInput;
+import com.it.userservis.dto.UserDTOOutput;
 import com.it.userservis.entity.User;
 import com.it.userservis.repository.UserRepository;
-import jakarta.validation.Valid;
+import com.it.userservis.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,38 +18,63 @@ public class UserServis {
     private final UserRepository userRepository;
 
 
-    public User saved(UserDTOInput dto) {
+    public UserDTOOutput saved(UserDTOInput dto) {
         User user = User.builder()
                 .nome(dto.getNome())
                 .cognome(dto.getCognome())
                 .email(dto.getEmail())
                 .indirizzo(dto.getIndirizzo())
                 .build();
-        return userRepository.save(user);
+
+        User savedUser = userRepository.save(user);
+
+        return convertToDTO(savedUser);
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserDTOOutput> findAll() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
-    public User findById(UUID id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Id User non trovato"));
-
+    public UserDTOOutput findById(UUID id) {
+        User user =  userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato nel sistema  id: "+id));
+        return convertToDTO(user);
     }
 
-    public User update(UUID id,UserDTOInput dto) {
-        User user = findById(id);
+    public UserDTOOutput update(UUID id,UserDTOInput dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato nel sistema  id: "+id));;
 
         user.setNome(dto.getNome());
         user.setCognome(dto.getCognome());
         user.setEmail(dto.getEmail());
         user.setIndirizzo(dto.getIndirizzo());
 
-        return userRepository.save(user);
+        User updateUser = userRepository.save(user);
+
+        return convertToDTO(updateUser);
     }
 
     public void delete(UUID id) {
-        userRepository.deleteById(id);
+
+        User user =  userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato nel sistema  id: "+id));
+
+        userRepository.delete(user);
+    }
+
+    private UserDTOOutput convertToDTO(User user) {
+
+        return UserDTOOutput.builder()
+                .id(user.getId())
+                .nome(user.getNome())
+                .cognome(user.getCognome())
+                .email(user.getEmail())
+                .indirizzo(user.getIndirizzo())
+                .build();
     }
 }

@@ -1,10 +1,13 @@
 package com.it.productservis.controler;
 
 import com.it.productservis.dto.ProductDTOInput;
+import com.it.productservis.dto.ProductDTOOutput;
 import com.it.productservis.entity.Product;
 import com.it.productservis.servis.ProductServis;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,28 +21,39 @@ public class ProductControler {
     private final ProductServis productServis;
 
     @PostMapping
-    public Product create(@Valid @RequestBody ProductDTOInput dto){
-        return productServis.saved(dto);
+    public ResponseEntity<ProductDTOOutput> create(@Valid @RequestBody ProductDTOInput dto){
+        ProductDTOOutput product = productServis.saved(dto);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(product);
     }
 
     @GetMapping
-    public List<Product> findAll(){
-        return productServis.findAll();
+    public ResponseEntity<List<ProductDTOOutput>> findAll(){
+        return ResponseEntity.ok(
+                productServis.findAll()
+        );
     }
 
     @GetMapping("/{id}")
-    public Product findById(@PathVariable UUID id){
-        return productServis.findById(id);
+    public ResponseEntity<ProductDTOOutput>  findById(@PathVariable UUID id){
+        return ResponseEntity.ok(
+                productServis.findById(id)
+        );
     }
 
     @PutMapping("/{id}")
-    public Product update(@PathVariable UUID id, @Valid @RequestBody ProductDTOInput dto){
-        return productServis.update(id,dto);
+    public ResponseEntity<ProductDTOOutput> update(@PathVariable UUID id, @Valid @RequestBody ProductDTOInput dto){
+        return ResponseEntity.ok(
+                productServis.update(id,dto)
+        );
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable UUID id){
+    public ResponseEntity<Void> delete(@PathVariable UUID id){
         productServis.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

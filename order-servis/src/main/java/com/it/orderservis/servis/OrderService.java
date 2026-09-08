@@ -35,21 +35,22 @@ public class OrderService {
                 .dataCreazione(LocalDateTime.now())
                 .build();
 
-        for (OrderItemDTOInput itemInput : input.getItems()) {
+        List<OrderItem> items = input.getItems()
+                .stream()
+                .map(itemInput ->{
+                    OrderItem item = OrderItem.builder()
+                            .productId(itemInput.getProductId())
+                            .quantita(itemInput.getQuantita())
+                            .prezzo(BigDecimal.ZERO)
+                            .order(order)
+                            .build();
+                    return item;
+                })
+                .toList();
 
-            OrderItem item = OrderItem.builder()
-                    .productId(itemInput.getProductId())
-                    .quantita(itemInput.getQuantita())
-                    .prezzo(BigDecimal.ZERO)
-                    .order(order)
-                    .build();
-
-            order.getItems().add(item);
-        }
-
-        orderRepository.save(order);
-
-        return convertToDTO(order);
+        order.setItems(items);
+        Order savedOrder = orderRepository.save(order);
+        return convertToDTO(savedOrder);
     }
 
     public List<OrderDTOOutput> getAllOrders() {
@@ -79,15 +80,11 @@ public class OrderService {
 
     private OrderDTOOutput convertToDTO(Order order) {
 
-        List<OrderItemDTOOutput> items = order.getItems()
-                .stream()
-                .map(item -> OrderItemDTOOutput.builder()
-                        .id(item.getId())
-                        .productId(item.getProductId())
-                        .quantita(item.getQuantita())
-                        .prezzo(item.getPrezzo())
-                        .build())
-                .collect(Collectors.toList());
+        List<OrderItemDTOOutput> items =
+                order.getItems()
+                        .stream()
+                        .map(this::convertItemToDTO)
+                        .toList();
 
         return OrderDTOOutput.builder()
                 .id(order.getId())
@@ -96,6 +93,17 @@ public class OrderService {
                 .stato(order.getStato())
                 .dataCreazione(order.getDataCreazione())
                 .items(items)
+                .build();
+    }
+
+    private OrderItemDTOOutput convertItemToDTO(
+            OrderItem item) {
+
+        return OrderItemDTOOutput.builder()
+                .id(item.getId())
+                .productId(item.getProductId())
+                .quantita(item.getQuantita())
+                .prezzo(item.getPrezzo())
                 .build();
     }
 }
