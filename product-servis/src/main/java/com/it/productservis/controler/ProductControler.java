@@ -3,6 +3,7 @@ package com.it.productservis.controler;
 import com.it.productservis.dto.ProductAvailabilityDTO;
 import com.it.productservis.dto.ProductDTOInput;
 import com.it.productservis.dto.ProductDTOOutput;
+import com.it.productservis.dto.StockUpdateDTO;
 import com.it.productservis.entity.Product;
 import com.it.productservis.servis.ProductServis;
 import jakarta.validation.Valid;
@@ -56,6 +57,17 @@ public class ProductControler {
         return ResponseEntity.ok(
                 productServis.update(id,dto)
         );
+    }
+
+    @PatchMapping("/{id}/stock/decrease")
+    public ResponseEntity<ProductDTOOutput> decreaseStock(
+            @PathVariable UUID id,
+            @Valid @RequestBody StockUpdateDTO input) {
+
+        ProductDTOOutput product =
+                productServis.decreaseStock(id, input.getQuantita());
+
+        return ResponseEntity.ok(product);
     }
 
     @DeleteMapping("/{id}")

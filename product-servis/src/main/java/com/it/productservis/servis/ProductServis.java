@@ -4,6 +4,7 @@ import com.it.productservis.dto.ProductAvailabilityDTO;
 import com.it.productservis.dto.ProductDTOInput;
 import com.it.productservis.dto.ProductDTOOutput;
 import com.it.productservis.entity.Product;
+import com.it.productservis.exception.InsufficientStockException;
 import com.it.productservis.exception.ResourceNotFoundException;
 import com.it.productservis.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -87,6 +88,31 @@ public class ProductServis {
                 .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato id: " + id));
 
         prouctRepository.delete(product);
+    }
+
+    @Transactional
+    public ProductDTOOutput decreaseStock(UUID id, Integer quantita){
+
+        Product product = prouctRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Prodotto con id (" + id + ") non trovato"
+                        )
+                );
+        if (quantita > product.getQuantita()){
+            throw new InsufficientStockException(
+                    "Quantità disponibile insufficiente per il prodotto: " + id
+            );
+        }
+
+        int nuovaQuantita = product.getQuantita() - quantita;
+
+        product.setQuantita(nuovaQuantita);
+        product.setDisponibile(nuovaQuantita > 0);
+
+        Product updatedProduct = prouctRepository.save(product);
+
+        return convertToDTO(updatedProduct);
     }
 
     private ProductDTOOutput convertToDTO(Product product) {
