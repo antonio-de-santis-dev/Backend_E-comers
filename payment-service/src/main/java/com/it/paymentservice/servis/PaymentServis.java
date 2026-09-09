@@ -70,6 +70,10 @@ public class PaymentServis {
         payment.setImporto(input.getImporto());
         payment.setMetodoPagamento(input.getMetodoPagamento());
 
+        PaymentStatus paymentStatus = paymentProcessor.processPayment(input.getImporto());
+
+        payment.setStato(paymentStatus);
+
         Payment updatedPayment = paymentRepository.save(payment);
 
         return convertToDTO(updatedPayment);
