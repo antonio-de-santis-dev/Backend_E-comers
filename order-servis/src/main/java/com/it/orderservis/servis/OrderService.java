@@ -2,6 +2,7 @@ package com.it.orderservis.servis;
 
 import com.it.orderservis.client.PaymentClient;
 import com.it.orderservis.client.ProductClient;
+import com.it.orderservis.client.UserClient;
 import com.it.orderservis.dto.*;
 import com.it.orderservis.entity.Order;
 import com.it.orderservis.entity.OrderItem;
@@ -27,11 +28,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
     private final PaymentClient paymentClient;
+    private final UserClient userClient;
 
 
     @Transactional
     public OrderDTOOutput createOrder(OrderDTOInput input) {
 
+        // 1. Verifica che l'utente esista
+        userClient.findUserById(input.getUserId());
+
+        // 2. Creo l'ordine
         Order order = Order.builder()
                 .userId(input.getUserId())
                 .totale(BigDecimal.ZERO)
@@ -42,6 +48,7 @@ public class OrderService {
         List<OrderItem> items = new ArrayList<>();
         BigDecimal totale = BigDecimal.ZERO;
 
+        // 3. Verifica prodotti + calcolo totale
         for (OrderItemDTOInput itemInput : input.getItems()) {
 
             ProductDTOOutput product =
@@ -81,46 +88,41 @@ public class OrderService {
         order.setItems(items);
         order.setTotale(totale);
 
-        // 1. SALVO L'ORDINE COME CREATED
+        // 4. Salva ordine CREATED
         Order savedOrder = orderRepository.save(order);
 
-        // 2. CREO LA RICHIESTA DI PAGAMENTO
+        // 5. Crea richiesta pagamento
         PaymentDTOInput paymentInput = PaymentDTOInput.builder()
                 .orderId(savedOrder.getId())
                 .importo(savedOrder.getTotale())
                 .metodoPagamento(input.getMetodoPagamento())
                 .build();
 
-        // 3. CHIAMO PAYMENT SERVICE
+        // 6. Chiama Payment Service
         PaymentDTOOutput payment =
                 paymentClient.createPayment(paymentInput);
 
-        // 4. CONTROLLO RISULTATO DEL PAGAMENTO
+        // 7. Gestisce esito pagamento
         if ("SUCCESS".equalsIgnoreCase(payment.getStato())) {
 
-            // 5. SE PAGAMENTO OK, DECREMENTO LO STOCK
             for (OrderItem item : savedOrder.getItems()) {
-
                 productClient.decreaseStock(
                         item.getProductId(),
                         item.getQuantita()
                 );
             }
 
-            // 6. ORDINE PAGATO
             savedOrder.setStato(OrderStatus.PAID);
 
         } else {
 
-            // 7. PAGAMENTO FALLITO
             savedOrder.setStato(OrderStatus.FAILED);
         }
 
-        // 8. SALVO IL NUOVO STATO DELL'ORDINE
+        // 8. Salva stato finale
         Order updatedOrder =
                 orderRepository.save(savedOrder);
 
-        // 9. RITORNO IL DTO
         return convertToDTO(updatedOrder);
     }
 
