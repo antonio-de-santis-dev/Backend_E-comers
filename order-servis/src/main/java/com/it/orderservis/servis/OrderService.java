@@ -1,5 +1,6 @@
 package com.it.orderservis.servis;
 
+import com.it.orderservis.client.PaymentClient;
 import com.it.orderservis.client.ProductClient;
 import com.it.orderservis.dto.*;
 import com.it.orderservis.entity.Order;
@@ -25,6 +26,8 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
+    private final PaymentClient paymentClient;
+
 
     @Transactional
     public OrderDTOOutput createOrder(OrderDTOInput input) {
@@ -37,23 +40,20 @@ public class OrderService {
                 .build();
 
         List<OrderItem> items = new ArrayList<>();
-
         BigDecimal totale = BigDecimal.ZERO;
 
-        for (OrderItemDTOInput itemDTOInput : input.getItems()) {
+        for (OrderItemDTOInput itemInput : input.getItems()) {
 
-            ProductDTOOutput product = productClient.findProductById(
-                    itemDTOInput.getProductId()
-            );
+            ProductDTOOutput product =
+                    productClient.findProductById(itemInput.getProductId());
 
-            if (!Boolean.TRUE.equals(product.getDisponibile())){
+            if (!Boolean.TRUE.equals(product.getDisponibile())) {
                 throw new InsufficientStockException(
-                        "Prodotto non disponibile: "
-                                + product.getId()
+                        "Prodotto non disponibile: " + product.getId()
                 );
             }
 
-            if (itemDTOInput.getQuantita() > product.getQuantita()){
+            if (itemInput.getQuantita() > product.getQuantita()) {
                 throw new InsufficientStockException(
                         "Quantità richiesta non disponibile per il prodotto: "
                                 + product.getId()
@@ -62,7 +62,7 @@ public class OrderService {
 
             OrderItem orderItem = OrderItem.builder()
                     .productId(product.getId())
-                    .quantita(itemDTOInput.getQuantita())
+                    .quantita(itemInput.getQuantita())
                     .prezzo(product.getPrezzo())
                     .order(order)
                     .build();
@@ -72,17 +72,58 @@ public class OrderService {
             BigDecimal subtotale =
                     product.getPrezzo()
                             .multiply(
-                                    BigDecimal.valueOf(
-                                            itemDTOInput.getQuantita()
-                                    )
+                                    BigDecimal.valueOf(itemInput.getQuantita())
                             );
+
             totale = totale.add(subtotale);
         }
+
         order.setItems(items);
         order.setTotale(totale);
+
+        // 1. SALVO L'ORDINE COME CREATED
         Order savedOrder = orderRepository.save(order);
-        return convertToDTO(savedOrder);
+
+        // 2. CREO LA RICHIESTA DI PAGAMENTO
+        PaymentDTOInput paymentInput = PaymentDTOInput.builder()
+                .orderId(savedOrder.getId())
+                .importo(savedOrder.getTotale())
+                .metodoPagamento(input.getMetodoPagamento())
+                .build();
+
+        // 3. CHIAMO PAYMENT SERVICE
+        PaymentDTOOutput payment =
+                paymentClient.createPayment(paymentInput);
+
+        // 4. CONTROLLO RISULTATO DEL PAGAMENTO
+        if ("SUCCESS".equalsIgnoreCase(payment.getStato())) {
+
+            // 5. SE PAGAMENTO OK, DECREMENTO LO STOCK
+            for (OrderItem item : savedOrder.getItems()) {
+
+                productClient.decreaseStock(
+                        item.getProductId(),
+                        item.getQuantita()
+                );
+            }
+
+            // 6. ORDINE PAGATO
+            savedOrder.setStato(OrderStatus.PAID);
+
+        } else {
+
+            // 7. PAGAMENTO FALLITO
+            savedOrder.setStato(OrderStatus.FAILED);
+        }
+
+        // 8. SALVO IL NUOVO STATO DELL'ORDINE
+        Order updatedOrder =
+                orderRepository.save(savedOrder);
+
+        // 9. RITORNO IL DTO
+        return convertToDTO(updatedOrder);
     }
+
     @Transactional(readOnly = true)
     public List<OrderDTOOutput> getAllOrders() {
         return orderRepository.findAll()

@@ -1,6 +1,7 @@
 package com.it.orderservis.dto;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,9 @@ public class OrderDTOInput {
 
     @NotNull(message = "campo obbligatorio")
     private UUID userId;
+
+    @NotBlank
+    private String metodoPagamento;
 
     @NotEmpty(message = "campo obbligatorio")
     private List<@Valid OrderItemDTOInput> items;
