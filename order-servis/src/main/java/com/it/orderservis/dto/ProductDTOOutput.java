@@ -1,4 +1,4 @@
-package com.it.orderservis.dto.dto;
+package com.it.orderservis.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,17 +9,22 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class OrderItemDTOOutput {
+public class ProductDTOOutput {
 
     private UUID id;
 
-    private UUID productId;
+    private String nome;
 
-    private Integer quantita;
+    private String descrizione;
 
     private BigDecimal prezzo;
 
+    private Integer quantita;
+
+    private String categoria;
+
+    private Boolean disponibile;
 }
