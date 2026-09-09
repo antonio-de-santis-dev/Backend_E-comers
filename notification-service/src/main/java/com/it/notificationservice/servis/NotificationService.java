@@ -6,6 +6,7 @@ import com.it.notificationservice.entity.Notification;
 import com.it.notificationservice.exception.ResourceNotFoundException;
 import com.it.notificationservice.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +15,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+
     @Transactional
     public NotificationDTOOutput createNotification( NotificationDTOInput input) {
 
@@ -31,8 +34,20 @@ public class NotificationService {
                 .dataCreazione(LocalDateTime.now())
                 .build();
 
+        log.info(
+                "Invio notifica [{}] a utente {} per ordine {}",
+                input.getTipo(),
+                input.getUserId(),
+                input.getOrderId()
+        );
+
         Notification savedNotification =
                 notificationRepository.save(notification);
+
+        log.info(
+                "Notifica {} registrata",
+                savedNotification.getId()
+        );
 
         return convertToDTO(savedNotification);
     }
