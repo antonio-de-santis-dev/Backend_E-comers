@@ -5,6 +5,7 @@ import com.it.paymentservice.dto.PaymentDTOOutput;
 import com.it.paymentservice.entity.Payment;
 import com.it.paymentservice.entity.PaymentStatus;
 import com.it.paymentservice.exception.ResourceNotFoundException;
+import com.it.paymentservice.payment.PaymentProcessor;
 import com.it.paymentservice.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,14 +20,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PaymentServis {
     private final PaymentRepository paymentRepository;
+    private final PaymentProcessor paymentProcessor;
+
     @Transactional
     public PaymentDTOOutput createPayment(PaymentDTOInput input) {
+
+        PaymentStatus paymentStatus = paymentProcessor.processPayment(input.getImporto());
+
 
         Payment payment = Payment.builder()
                 .orderId(input.getOrderId())
                 .importo(input.getImporto())
                 .metodoPagamento(input.getMetodoPagamento())
-                .stato(PaymentStatus.PENDING)
+                .stato(paymentStatus)
                 .dataCreazione(LocalDateTime.now())
                 .build();
 
