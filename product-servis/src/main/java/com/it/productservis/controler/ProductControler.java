@@ -1,5 +1,6 @@
 package com.it.productservis.controler;
 
+import com.it.productservis.dto.ProductAvailabilityDTO;
 import com.it.productservis.dto.ProductDTOInput;
 import com.it.productservis.dto.ProductDTOOutput;
 import com.it.productservis.entity.Product;
@@ -40,6 +41,13 @@ public class ProductControler {
     public ResponseEntity<ProductDTOOutput>  findById(@PathVariable UUID id){
         return ResponseEntity.ok(
                 productServis.findById(id)
+        );
+    }
+
+    @GetMapping("/{id}/availability")
+    public ResponseEntity<ProductAvailabilityDTO> findeByIdXcheckAvailability( @PathVariable UUID id){
+        return ResponseEntity.ok(
+                productServis.findeByIdXcheckAvailability(id)
         );
     }
 

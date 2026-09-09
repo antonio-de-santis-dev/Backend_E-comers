@@ -1,5 +1,6 @@
 package com.it.productservis.servis;
 
+import com.it.productservis.dto.ProductAvailabilityDTO;
 import com.it.productservis.dto.ProductDTOInput;
 import com.it.productservis.dto.ProductDTOOutput;
 import com.it.productservis.entity.Product;
@@ -48,6 +49,22 @@ public class ProductServis {
                 .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato id: " + id));
         return convertToDTO(product);
     }
+
+    @Transactional(readOnly = true)
+    public ProductAvailabilityDTO findeByIdXcheckAvailability(UUID id){
+
+        Product product = prouctRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato id: " + id));
+
+        return ProductAvailabilityDTO.builder()
+                .id(product.getId())
+                .quantita(product.getQuantita())
+                .disponibile(product.getDisponibile())
+                .build();
+
+    }
+
+
     @Transactional
     public ProductDTOOutput update(UUID id,ProductDTOInput dto) {
         Product product= prouctRepository.findById(id)
