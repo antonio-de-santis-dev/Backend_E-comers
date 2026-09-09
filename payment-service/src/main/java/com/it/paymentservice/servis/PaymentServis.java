@@ -3,6 +3,7 @@ package com.it.paymentservice.servis;
 import com.it.paymentservice.dto.PaymentDTOInput;
 import com.it.paymentservice.dto.PaymentDTOOutput;
 import com.it.paymentservice.entity.Payment;
+import com.it.paymentservice.entity.PaymentStatus;
 import com.it.paymentservice.exception.ResourceNotFoundException;
 import com.it.paymentservice.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class PaymentServis {
                 .orderId(input.getOrderId())
                 .importo(input.getImporto())
                 .metodoPagamento(input.getMetodoPagamento())
-                .stato("PENDING")
+                .stato(PaymentStatus.PENDING)
                 .dataCreazione(LocalDateTime.now())
                 .build();
 

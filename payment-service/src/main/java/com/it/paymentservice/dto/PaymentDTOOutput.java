@@ -1,5 +1,6 @@
 package com.it.paymentservice.dto;
 
+import com.it.paymentservice.entity.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class PaymentDTOOutput {
     private UUID orderId;
     private BigDecimal importo;
     private String metodoPagamento;
-    private String stato;
+    private PaymentStatus stato;
     private LocalDateTime dataCreazione;
 
 }

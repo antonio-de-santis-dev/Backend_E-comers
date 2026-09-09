@@ -31,8 +31,8 @@ public class Payment {
     @Column(nullable = false)
     private String metodoPagamento;
 
-    @Column(nullable = false)
-    private String stato; //puo esere convertito con un ENUM
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus stato;
 
     @Column(nullable = false)
     private LocalDateTime dataCreazione;
