@@ -1,5 +1,6 @@
 package com.it.orderservis.servis;
 
+import com.it.orderservis.client.NotificationClient;
 import com.it.orderservis.client.PaymentClient;
 import com.it.orderservis.client.ProductClient;
 import com.it.orderservis.client.UserClient;
@@ -13,6 +14,8 @@ import com.it.orderservis.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.it.orderservis.client.NotificationClient;
+import com.it.orderservis.dto.NotificationDTOInput;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,6 +32,7 @@ public class OrderService {
     private final ProductClient productClient;
     private final PaymentClient paymentClient;
     private final UserClient userClient;
+    private final NotificationClient notificationClient;
 
 
     @Transactional
@@ -118,6 +122,15 @@ public class OrderService {
                 }
 
                 savedOrder.setStato(OrderStatus.PAID);
+                NotificationDTOInput notificationInput =
+                        NotificationDTOInput.builder()
+                                .userId(savedOrder.getUserId())
+                                .orderId(savedOrder.getId())
+                                .tipo("ORDER_PAID")
+                                .messaggio("Ordine pagato con successo")
+                                .build();
+
+                notificationClient.createNotification(notificationInput);
 
             }catch (Exception e){
 
@@ -128,11 +141,34 @@ public class OrderService {
                     );
                 }
                 savedOrder.setStato(OrderStatus.FAILED);
-                throw e;
+                savedOrder.setStato(OrderStatus.FAILED);
+
+                NotificationDTOInput notificationInput =
+                        NotificationDTOInput.builder()
+                                .userId(savedOrder.getUserId())
+                                .orderId(savedOrder.getId())
+                                .tipo("ORDER_FAILED")
+                                .messaggio("Ordine non completato")
+                                .build();
+
+                notificationClient.createNotification(notificationInput);
+
+                orderRepository.save(savedOrder);
+
+                return convertToDTO(savedOrder);
             }
         } else {
             savedOrder.setStato(OrderStatus.FAILED);
-        }
+
+            NotificationDTOInput notificationInput =
+                    NotificationDTOInput.builder()
+                            .userId(savedOrder.getUserId())
+                            .orderId(savedOrder.getId())
+                            .tipo("ORDER_FAILED")
+                            .messaggio("Ordine non completato")
+                            .build();
+
+            notificationClient.createNotification(notificationInput);        }
 
         // 8. Salva stato finale
         Order updatedOrder =
