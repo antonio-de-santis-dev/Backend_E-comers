@@ -2,14 +2,12 @@ package com.it.orderservis.servis;
 
 import com.it.orderservis.dto.OrderDTOInput;
 import com.it.orderservis.dto.OrderDTOOutput;
-import com.it.orderservis.dto.OrderItemDTOInput;
 import com.it.orderservis.dto.OrderItemDTOOutput;
 import com.it.orderservis.entity.Order;
 import com.it.orderservis.entity.OrderItem;
 import com.it.orderservis.exception.ResourceNotFoundException;
 import com.it.orderservis.repository.OrderItemRepository;
 import com.it.orderservis.repository.OrderRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +23,6 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
 
     @Transactional
     public OrderDTOOutput createOrder(OrderDTOInput input) {
