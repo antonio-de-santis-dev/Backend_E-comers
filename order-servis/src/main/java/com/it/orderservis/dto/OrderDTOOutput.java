@@ -1,5 +1,6 @@
 package com.it.orderservis.dto;
 
+import com.it.orderservis.entity.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class OrderDTOOutput {
 
     private BigDecimal totale;
 
-    private String stato;
+    private OrderStatus stato;
 
     private LocalDateTime dataCreazione;
 

@@ -5,8 +5,8 @@ import com.it.orderservis.dto.OrderDTOOutput;
 import com.it.orderservis.dto.OrderItemDTOOutput;
 import com.it.orderservis.entity.Order;
 import com.it.orderservis.entity.OrderItem;
+import com.it.orderservis.entity.OrderStatus;
 import com.it.orderservis.exception.ResourceNotFoundException;
-import com.it.orderservis.repository.OrderItemRepository;
 import com.it.orderservis.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class OrderService {
         Order order = Order.builder()
                 .userId(input.getUserId())
                 .totale(BigDecimal.ZERO)
-                .stato("CREATED")
+                .stato(OrderStatus.CREATED)
                 .dataCreazione(LocalDateTime.now())
                 .build();
 

@@ -30,8 +30,8 @@ public class Order {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totale;
 
-    @Column(nullable = false)
-    private String stato; //in futuro un ENUM
+    @Enumerated(EnumType.STRING)
+    private OrderStatus stato;
 
     @Column(nullable = false)
     private LocalDateTime dataCreazione;
