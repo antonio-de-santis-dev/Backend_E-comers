@@ -115,6 +115,24 @@ public class ProductServis {
         return convertToDTO(updatedProduct);
     }
 
+    @Transactional
+    public ProductDTOOutput increaseStock(UUID id, Integer quantita){
+
+        Product product = prouctRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Prodotto con id (" + id + ") non trovato"
+                        ));
+        int nuovaQuantita = product.getQuantita() + quantita;
+
+        product.setQuantita(nuovaQuantita);
+        product.setDisponibile(true);
+
+        Product updatedProduct = prouctRepository.save(product);
+
+        return convertToDTO(updatedProduct);
+    }
+
     private ProductDTOOutput convertToDTO(Product product) {
 
         return ProductDTOOutput.builder()

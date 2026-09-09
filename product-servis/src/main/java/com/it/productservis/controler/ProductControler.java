@@ -70,6 +70,17 @@ public class ProductControler {
         return ResponseEntity.ok(product);
     }
 
+    @PatchMapping("/{id}/stock/increase")
+    public ResponseEntity<ProductDTOOutput> increaseStock(
+            @PathVariable UUID id,
+            @Valid @RequestBody StockUpdateDTO input) {
+
+        ProductDTOOutput product =
+                productServis.increaseStock(id, input.getQuantita());
+
+        return ResponseEntity.ok(product);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id){
         productServis.delete(id);
