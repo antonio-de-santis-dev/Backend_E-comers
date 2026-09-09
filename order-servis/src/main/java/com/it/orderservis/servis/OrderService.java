@@ -105,17 +105,32 @@ public class OrderService {
         // 7. Gestisce esito pagamento
         if ("SUCCESS".equalsIgnoreCase(payment.getStato())) {
 
-            for (OrderItem item : savedOrder.getItems()) {
-                productClient.decreaseStock(
-                        item.getProductId(),
-                        item.getQuantita()
-                );
+            List<OrderItem> stockDecremented = new ArrayList<>();
+
+            try {
+                for (OrderItem item : savedOrder.getItems()) {
+                    productClient.decreaseStock(
+                            item.getProductId(),
+                            item.getQuantita()
+                    );
+
+                    stockDecremented.add(item);
+                }
+
+                savedOrder.setStato(OrderStatus.PAID);
+
+            }catch (Exception e){
+
+                for (OrderItem item : stockDecremented) {
+                    productClient.increaseStock(
+                            item.getProductId(),
+                            item.getQuantita()
+                    );
+                }
+                savedOrder.setStato(OrderStatus.FAILED);
+                throw e;
             }
-
-            savedOrder.setStato(OrderStatus.PAID);
-
         } else {
-
             savedOrder.setStato(OrderStatus.FAILED);
         }
 

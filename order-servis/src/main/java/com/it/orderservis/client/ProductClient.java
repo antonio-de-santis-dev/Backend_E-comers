@@ -57,4 +57,27 @@ public class ProductClient {
                         )
                 .body(ProductDTOOutput.class);
     }
+
+    public ProductDTOOutput increaseStock(UUID productId, Integer quantita) {
+
+        StockUpdateDTO input = new StockUpdateDTO(quantita);
+
+        return restClient
+                .patch()
+                .uri(
+                        productServiceUrl + "/api/products/{id}/stock/increase",
+                        productId
+                )
+                .body(input)
+                .retrieve()
+                .onStatus(
+                        status -> status.value() == 404,
+                        (request, response) -> {
+                            throw new ResourceNotFoundException(
+                                    "Prodotto con id (" + productId + ") non trovato"
+                            );
+                        }
+                )
+                .body(ProductDTOOutput.class);
+    }
 }
