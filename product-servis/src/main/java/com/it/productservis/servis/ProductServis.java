@@ -27,7 +27,7 @@ public class ProductServis {
                 .prezzo(dto.getPrezzo())
                 .quantita(dto.getQuantita())
                 .categoria(dto.getCategoria())
-                .disponibile(dto.getDisponibile())
+                .disponibile(dto.getQuantita() > 0)
                 .build();
         Product savedProduct = prouctRepository.save(product);
 
@@ -58,7 +58,7 @@ public class ProductServis {
         product.setPrezzo(dto.getPrezzo());
         product.setQuantita(dto.getQuantita());
         product.setCategoria(dto.getCategoria());
-        product.setDisponibile(dto.getDisponibile());
+        product.setDisponibile(dto.getQuantita() > 0);
 
         Product updateProduct = prouctRepository.save(product);
 

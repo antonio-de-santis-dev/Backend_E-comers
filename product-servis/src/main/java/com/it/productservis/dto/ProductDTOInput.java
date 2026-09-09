@@ -34,6 +34,4 @@ public class ProductDTOInput {
     @NotBlank(message = "campo obbligatorio")
     private String categoria;
 
-    @NotNull(message = "campo obbligatorio")
-    private Boolean disponibile;
 }
