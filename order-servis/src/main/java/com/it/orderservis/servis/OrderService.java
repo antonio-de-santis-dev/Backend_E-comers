@@ -12,9 +12,9 @@ import com.it.orderservis.exception.InsufficientStockException;
 import com.it.orderservis.exception.ResourceNotFoundException;
 import com.it.orderservis.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.it.orderservis.client.NotificationClient;
 import com.it.orderservis.dto.NotificationDTOInput;
 
 import java.math.BigDecimal;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -112,6 +113,7 @@ public class OrderService {
             List<OrderItem> stockDecremented = new ArrayList<>();
 
             try {
+                // 8. Provo a decrementare lo stock di tutti i prodotti
                 for (OrderItem item : savedOrder.getItems()) {
                     productClient.decreaseStock(
                             item.getProductId(),
@@ -122,58 +124,69 @@ public class OrderService {
                 }
 
                 savedOrder.setStato(OrderStatus.PAID);
-                NotificationDTOInput notificationInput =
-                        NotificationDTOInput.builder()
-                                .userId(savedOrder.getUserId())
-                                .orderId(savedOrder.getId())
-                                .tipo("ORDER_PAID")
-                                .messaggio("Ordine pagato con successo")
-                                .build();
-
-                notificationClient.createNotification(notificationInput);
 
             }catch (Exception e){
 
+                // 9. Compensazione: ripristino solamente gli stock già decrementati
                 for (OrderItem item : stockDecremented) {
-                    productClient.increaseStock(
-                            item.getProductId(),
-                            item.getQuantita()
-                    );
+
+                    try {
+
+                        productClient.increaseStock(
+                                item.getProductId(),
+                                item.getQuantita()
+                        );
+                    }catch (Exception compensationException){
+
+                        log.error(
+                                "Errore durante il ripristino dello stock del prodotto {} per ordine {}: {}",
+                                item.getProductId(),
+                                savedOrder.getId(),
+                                compensationException.getMessage()
+                        );
+                    }
                 }
                 savedOrder.setStato(OrderStatus.FAILED);
-                savedOrder.setStato(OrderStatus.FAILED);
 
-                NotificationDTOInput notificationInput =
-                        NotificationDTOInput.builder()
-                                .userId(savedOrder.getUserId())
-                                .orderId(savedOrder.getId())
-                                .tipo("ORDER_FAILED")
-                                .messaggio("Ordine non completato")
-                                .build();
+                log.error(
+                        "Errore durante il decremento stock per ordine {}: {}",
+                        savedOrder.getId(),
+                        e.getMessage()
 
-                notificationClient.createNotification(notificationInput);
-
-                orderRepository.save(savedOrder);
-
-                return convertToDTO(savedOrder);
+                );
             }
         } else {
             savedOrder.setStato(OrderStatus.FAILED);
+        }
 
+        // 10. Salvo SEMPRE lo stato finale dell'ordine
+        Order updatedOrder =
+                orderRepository.save(savedOrder);
+
+        // 11. La notifica avviene DOPO il salvataggio dello stato
+        if (updatedOrder.getStato() == OrderStatus.PAID){
             NotificationDTOInput notificationInput =
                     NotificationDTOInput.builder()
-                            .userId(savedOrder.getUserId())
-                            .orderId(savedOrder.getId())
+                            .userId(updatedOrder.getUserId())
+                            .orderId(updatedOrder.getId())
+                            .tipo("ORDER_PAID")
+                            .messaggio("Ordine pagato con successo")
+                            .build();
+
+            sendNotificationSafely(notificationInput);
+        } else if (updatedOrder.getStato() == OrderStatus.FAILED){
+            NotificationDTOInput notificationInput =
+                    NotificationDTOInput.builder()
+                            .userId(updatedOrder.getUserId())
+                            .orderId(updatedOrder.getId())
                             .tipo("ORDER_FAILED")
                             .messaggio("Ordine non completato")
                             .build();
 
-            notificationClient.createNotification(notificationInput);        }
+            sendNotificationSafely(notificationInput);
+        }
 
-        // 8. Salva stato finale
-        Order updatedOrder =
-                orderRepository.save(savedOrder);
-
+        // 12. Ritorno il risultato finale
         return convertToDTO(updatedOrder);
     }
 
@@ -230,5 +243,20 @@ public class OrderService {
                 .quantita(item.getQuantita())
                 .prezzo(item.getPrezzo())
                 .build();
+    }
+
+    private void sendNotificationSafely(NotificationDTOInput notificationInput) {
+
+        try {
+            notificationClient.createNotification(notificationInput);
+
+        } catch (Exception ex) {
+
+            log.error(
+                    "Errore durante l'invio della notifica per ordine {}: {}",
+                    notificationInput.getOrderId(),
+                    ex.getMessage()
+            );
+        }
     }
 }
