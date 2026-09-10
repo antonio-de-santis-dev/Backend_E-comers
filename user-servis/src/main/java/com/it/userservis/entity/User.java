@@ -29,7 +29,23 @@ private String cognome;
 @Column(nullable = false, unique = true)
 private String email;
 
-private String indirizzo;
+@Column(length = 20)
+private String telefono;
 
+@Column(nullable = false)
+private String indirizzoResidenza;
+
+private String indirizzoSpedizione;
+
+    @Column(nullable = false, length = 10)
+private String cap;
+    @Column(nullable = false)
+private String citta;
+    @Column(nullable = false, length = 100)
+private String provincia;
+    @Column(nullable = false, length = 100)
+private String regione;
+    @Column(nullable = false, length = 100)
+private String paese;
 
 }

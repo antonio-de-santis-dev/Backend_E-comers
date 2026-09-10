@@ -20,12 +20,19 @@ public class UserServis {
 
 
     @Transactional
-    public UserDTOOutput saved(UserDTOInput dto) {
+    public UserDTOOutput saved(UserDTOInput input) {
         User user = User.builder()
-                .nome(dto.getNome())
-                .cognome(dto.getCognome())
-                .email(dto.getEmail())
-                .indirizzo(dto.getIndirizzo())
+                .nome(input.getNome())
+                .cognome(input.getCognome())
+                .email(input.getEmail())
+                .telefono(input.getTelefono())
+                .indirizzoResidenza(input.getIndirizzoResidenza())
+                .indirizzoSpedizione(resolveIndirizzoSpedizione(input))
+                .cap(input.getCap())
+                .citta(input.getCitta())
+                .provincia(input.getProvincia())
+                .regione(input.getRegione())
+                .paese(input.getPaese())
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -48,14 +55,21 @@ public class UserServis {
         return convertToDTO(user);
     }
     @Transactional
-    public UserDTOOutput update(UUID id,UserDTOInput dto) {
+    public UserDTOOutput update(UUID id,UserDTOInput input) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Utente_non_trovato_nel_sistema_id= "+id));;
 
-        user.setNome(dto.getNome());
-        user.setCognome(dto.getCognome());
-        user.setEmail(dto.getEmail());
-        user.setIndirizzo(dto.getIndirizzo());
+        user.setNome(input.getNome());
+        user.setCognome(input.getCognome());
+        user.setEmail(input.getEmail());
+        user.setTelefono(input.getTelefono());
+        user.setIndirizzoResidenza(input.getIndirizzoResidenza());
+        user.setIndirizzoSpedizione(resolveIndirizzoSpedizione(input));
+        user.setCap(input.getCap());
+        user.setCitta(input.getCitta());
+        user.setProvincia(input.getProvincia());
+        user.setRegione(input.getRegione());
+        user.setPaese(input.getPaese());
 
         User updateUser = userRepository.save(user);
 
@@ -70,6 +84,15 @@ public class UserServis {
         userRepository.delete(user);
     }
 
+
+    private String resolveIndirizzoSpedizione(UserDTOInput input){
+
+        if (input.getIndirizzoSpedizione() == null || input.getIndirizzoSpedizione().isBlank()){
+            return input.getIndirizzoResidenza();
+        }
+        return input.getIndirizzoSpedizione();
+    }
+
     private UserDTOOutput convertToDTO(User user) {
 
         return UserDTOOutput.builder()
@@ -77,7 +100,14 @@ public class UserServis {
                 .nome(user.getNome())
                 .cognome(user.getCognome())
                 .email(user.getEmail())
-                .indirizzo(user.getIndirizzo())
+                .telefono(user.getTelefono())
+                .indirizzoResidenza(user.getIndirizzoResidenza())
+                .indirizzoSpedizione(user.getIndirizzoSpedizione())
+                .cap(user.getCap())
+                .citta(user.getCitta())
+                .provincia(user.getProvincia())
+                .regione(user.getRegione())
+                .paese(user.getPaese())
                 .build();
     }
 }

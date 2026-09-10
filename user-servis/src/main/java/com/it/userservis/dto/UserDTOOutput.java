@@ -17,6 +17,13 @@ public class UserDTOOutput {
     private String nome;
     private String cognome;
     private String email;
-    private String indirizzo;
+    private String telefono;
+    private String indirizzoResidenza;
+    private String indirizzoSpedizione;
+    private String cap;
+    private String citta;
+    private String provincia;
+    private String regione;
+    private String paese;
 
 }
