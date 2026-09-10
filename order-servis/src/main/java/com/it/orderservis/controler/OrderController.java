@@ -1,5 +1,6 @@
 package com.it.orderservis.controler;
 
+import com.it.orderservis.dto.GuestOrderDTOInput;
 import com.it.orderservis.dto.OrderDTOInput;
 import com.it.orderservis.dto.OrderDTOOutput;
 import com.it.orderservis.servis.OrderService;
@@ -27,6 +28,16 @@ public class OrderController {
         OrderDTOOutput order = orderService.createOrder(orderDTOInput);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
+    }
+
+    @PostMapping("/guest")
+    public ResponseEntity<OrderDTOOutput> createGuestOrder(
+            @Valid @RequestBody GuestOrderDTOInput input
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(orderService.createGuestOrder(input));
     }
 
 

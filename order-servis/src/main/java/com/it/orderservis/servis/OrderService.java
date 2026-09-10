@@ -238,6 +238,24 @@ public class OrderService {
         return convertToDTO(updatedOrder);
     }
 
+    @Transactional
+    public OrderDTOOutput createGuestOrder(GuestOrderDTOInput input){
+
+        // 1. Creo o recupero il Guest nel User Service
+        UserDTOOutput user = userClient.resolveGuest(input.getUser());
+
+        // 2. Trsfomo la richiesta Guset in una normale richiesta Order
+        OrderDTOInput orderInput = OrderDTOInput.builder()
+                .userId(user.getId())
+                .items(input.getItems())
+                .metodoPagamento(input.getMetodoPagamento())
+                .shipping(input.getShipping())
+                .build();
+
+        // 3. Riutilizzo tutta la logica gia esistente
+        return createOrder(orderInput);
+    }
+
     @Transactional(readOnly = true)
     public List<OrderDTOOutput> getAllOrders() {
         return orderRepository.findAll()

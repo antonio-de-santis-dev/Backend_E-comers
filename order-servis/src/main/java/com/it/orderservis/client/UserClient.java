@@ -1,5 +1,6 @@
 package com.it.orderservis.client;
 
+import com.it.orderservis.dto.GuestUserDTOInput;
 import com.it.orderservis.dto.UserDTOOutput;
 import com.it.orderservis.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,15 @@ public class UserClient {
                             );
                         }
                 )
+                .body(UserDTOOutput.class);
+    }
+
+    public UserDTOOutput resolveGuest(GuestUserDTOInput input) {
+
+        return restClient.post()
+                .uri("/api/users/guest")
+                .body(input)
+                .retrieve()
                 .body(UserDTOOutput.class);
     }
 }
