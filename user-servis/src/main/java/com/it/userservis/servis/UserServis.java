@@ -1,5 +1,6 @@
 package com.it.userservis.servis;
 
+import com.it.userservis.dto.GuestUserDTOInput;
 import org.springframework.transaction.annotation.Transactional;
 import com.it.userservis.dto.UserDTOInput;
 import com.it.userservis.dto.UserDTOOutput;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,6 +30,40 @@ public class UserServis {
                 .telefono(input.getTelefono())
                 .indirizzoResidenza(input.getIndirizzoResidenza())
                 .indirizzoSpedizione(resolveIndirizzoSpedizione(input))
+                .cap(input.getCap())
+                .citta(input.getCitta())
+                .provincia(input.getProvincia())
+                .regione(input.getRegione())
+                .paese(input.getPaese())
+                .build();
+
+        User savedUser = userRepository.save(user);
+
+        return convertToDTO(savedUser);
+    }
+
+    @Transactional
+    public UserDTOOutput resolveGuset(GuestUserDTOInput input){
+
+        Optional<User> exixstingUser = userRepository.findByEmail(input.getEmail());
+
+        if(exixstingUser.isPresent()){
+            return convertToDTO(exixstingUser.get());
+        }
+
+        String indirizzoSpedizione = input.getIndirizzoSpedizione();
+
+        if (indirizzoSpedizione == null || indirizzoSpedizione.isBlank()){
+
+            indirizzoSpedizione = input.getIndirizzoResidenza();
+        }
+        User user = User.builder()
+                .nome(input.getNome())
+                .cognome(input.getCognome())
+                .email(input.getEmail())
+                .telefono(input.getTelefono())
+                .indirizzoResidenza(input.getIndirizzoResidenza())
+                .indirizzoSpedizione(indirizzoSpedizione)
                 .cap(input.getCap())
                 .citta(input.getCitta())
                 .provincia(input.getProvincia())
@@ -75,6 +111,7 @@ public class UserServis {
 
         return convertToDTO(updateUser);
     }
+
     @Transactional
     public void delete(UUID id) {
 

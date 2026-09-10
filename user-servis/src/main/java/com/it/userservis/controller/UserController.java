@@ -1,5 +1,6 @@
 package com.it.userservis.controller;
 
+import com.it.userservis.dto.GuestUserDTOInput;
 import com.it.userservis.dto.UserDTOInput;
 import com.it.userservis.dto.UserDTOOutput;
 import com.it.userservis.entity.User;
@@ -28,6 +29,13 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(user);
+    }
+
+    @PostMapping("/guest")
+    public  ResponseEntity<UserDTOOutput> resolveGuest(@Valid @RequestBody GuestUserDTOInput input){
+        return ResponseEntity.ok(
+                userServis.resolveGuset(input)
+        );
     }
 
     @GetMapping
