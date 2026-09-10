@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,6 +26,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "cod_order", nullable = false, unique = true)
+    private String codOrder;
+
     @Column(nullable = false)
     private UUID userId;
 
@@ -36,7 +41,22 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime dataCreazione;
 
+    @OneToOne(
+            mappedBy = "order",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Shipping shipping;
+
     @Builder.Default
-    @OneToMany(mappedBy = "order",  cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "order",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<OrderItem> items = new ArrayList<>();
 }
