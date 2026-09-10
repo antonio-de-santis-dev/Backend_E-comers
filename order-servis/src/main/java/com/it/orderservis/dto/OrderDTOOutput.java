@@ -18,15 +18,12 @@ import java.util.UUID;
 public class OrderDTOOutput {
 
     private UUID id;
-
+    private String codOrder;
     private UUID userId;
-
     private BigDecimal totale;
-
     private OrderStatus stato;
-
     private LocalDateTime dataCreazione;
-
     private List<OrderItemDTOOutput> items;
+    private ShippingDTOOutput shipping;
 
 }

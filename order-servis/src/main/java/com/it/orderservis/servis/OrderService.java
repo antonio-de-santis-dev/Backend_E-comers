@@ -8,6 +8,7 @@ import com.it.orderservis.dto.*;
 import com.it.orderservis.entity.Order;
 import com.it.orderservis.entity.OrderItem;
 import com.it.orderservis.entity.OrderStatus;
+import com.it.orderservis.entity.Shipping;
 import com.it.orderservis.exception.InsufficientStockException;
 import com.it.orderservis.exception.ResourceNotFoundException;
 import com.it.orderservis.repository.OrderRepository;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.it.orderservis.dto.NotificationDTOInput;
 
 import java.math.BigDecimal;
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,15 +42,32 @@ public class OrderService {
     public OrderDTOOutput createOrder(OrderDTOInput input) {
 
         // 1. Verifica che l'utente esista
-        userClient.findUserById(input.getUserId());
+       UserDTOOutput user = userClient.findUserById(input.getUserId());
+       //1.1. Genero il codice oridine
+        String codOrder = generateCodOrder(user);
 
         // 2. Creo l'ordine
         Order order = Order.builder()
+                .codOrder(codOrder)
                 .userId(input.getUserId())
                 .totale(BigDecimal.ZERO)
                 .stato(OrderStatus.CREATED)
                 .dataCreazione(LocalDateTime.now())
                 .build();
+        //2.1. Creo lo Shipping con snapshot dei dati
+        Shipping shipping = Shipping.builder()
+                .emailContatto(user.getEmail())
+                .indirizzoSpedizione(user.getIndirizzoSpedizione())
+                .cap(user.getCap())
+                .citta(user.getCitta())
+                .provincia(user.getProvincia())
+                .regione(user.getRegione())
+                .paese(user.getPaese())
+                .order(order)
+                .build();
+
+        //2.2. Collego Shipping a Order
+        order.setShipping(shipping);
 
         List<OrderItem> items = new ArrayList<>();
         BigDecimal totale = BigDecimal.ZERO;
@@ -218,19 +237,45 @@ public class OrderService {
 
     private OrderDTOOutput convertToDTO(Order order) {
 
-        List<OrderItemDTOOutput> items =
-                order.getItems()
-                        .stream()
-                        .map(this::convertItemToDTO)
-                        .toList();
+        List<OrderItemDTOOutput> items = order.getItems()
+                .stream()
+                .map(item -> OrderItemDTOOutput.builder()
+                        .id(item.getId())
+                        .productId(item.getProductId())
+                        .quantita(item.getQuantita())
+                        .prezzo(item.getPrezzo())
+                        .build()
+                )
+                .toList();
+
+        ShippingDTOOutput shippingDTO = null;
+
+        if (order.getShipping() != null) {
+
+            Shipping shipping = order.getShipping();
+
+            shippingDTO = ShippingDTOOutput.builder()
+                    .id(shipping.getId())
+                    .codOrder(order.getCodOrder())
+                    .emailContatto(shipping.getEmailContatto())
+                    .indirizzoSpedizione(shipping.getIndirizzoSpedizione())
+                    .cap(shipping.getCap())
+                    .citta(shipping.getCitta())
+                    .provincia(shipping.getProvincia())
+                    .regione(shipping.getRegione())
+                    .paese(shipping.getPaese())
+                    .build();
+        }
 
         return OrderDTOOutput.builder()
                 .id(order.getId())
+                .codOrder(order.getCodOrder())
                 .userId(order.getUserId())
                 .totale(order.getTotale())
                 .stato(order.getStato())
                 .dataCreazione(order.getDataCreazione())
                 .items(items)
+                .shipping(shippingDTO)
                 .build();
     }
 
@@ -258,5 +303,57 @@ public class OrderService {
                     ex.getMessage()
             );
         }
+    }
+
+    private String generateCodOrder(UserDTOOutput user){
+
+        String nomeCod = extractCodePart(user.getNome());
+        String cognomeCode = extractCodePart(user.getCognome());
+        String cittaCode = extractFirstLetter(user.getCitta());
+
+        Long sequence = orderRepository.getNextOrderSequence();
+
+        return String.format(
+                "%s%s-%06d-%s",
+                nomeCod,
+                cognomeCode,
+                sequence,
+                cittaCode
+
+
+        );
+    }
+
+    private String extractCodePart(String value) {
+
+        String normalized = normalizeValue(value);
+
+        if (normalized.length() == 1) {
+            return normalized + normalized;
+        }
+
+        return ""
+                + normalized.charAt(0)
+                + normalized.charAt(normalized.length() - 1);
+    }
+
+    private String extractFirstLetter(String value) {
+
+        String normalized = normalizeValue(value);
+
+        return String.valueOf(normalized.charAt(0));
+    }
+
+    private String normalizeValue(String value) {
+
+        String normalized = Normalizer.normalize(
+                value,
+                Normalizer.Form.NFD
+        );
+
+        return normalized
+                .replaceAll("\\p{M}", "")
+                .replaceAll("[^a-zA-Z]", "")
+                .toUpperCase();
     }
 }
