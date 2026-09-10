@@ -41,6 +41,12 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime dataCreazione;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean cancelazioneRichiesta = false;
+
+    private LocalDateTime dataRichiestaCancellazione;
+
     @OneToOne(
             mappedBy = "order",
             cascade = CascadeType.ALL,

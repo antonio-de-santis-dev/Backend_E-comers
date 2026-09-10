@@ -11,6 +11,7 @@ import com.it.orderservis.entity.OrderStatus;
 import com.it.orderservis.entity.Shipping;
 import com.it.orderservis.exception.InsufficientStockException;
 import com.it.orderservis.exception.ResourceNotFoundException;
+import com.it.orderservis.exception.ResourceAlreadyExistsException;
 import com.it.orderservis.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -252,6 +253,47 @@ public class OrderService {
                 .orElseThrow(()-> new ResourceNotFoundException("Ordine con id: ("+id +") non trtovato"));
         return convertToDTO(order);
     }
+
+    @Transactional
+    public OrderDTOOutput requestCancellation(UUID orderId){
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Ordine non trovato con id: " + orderId
+                        ));
+        if (order.getStato() != OrderStatus.PAID){
+            throw new IllegalStateException(
+                    "La cancellazione può essere richiesta solo per ordini PAID"
+            );
+        }
+
+        if (Boolean.TRUE.equals(order.getCancelazioneRichiesta())){
+            throw new ResourceAlreadyExistsException(
+                    "La cancellazione è già stata richiesta per questo ordine"
+            );
+        }
+
+        order.setCancelazioneRichiesta(true);
+        order.setDataRichiestaCancellazione(LocalDateTime.now());
+
+        Order updatedOrder = orderRepository.save(order);
+
+        NotificationDTOInput notificationDTOInput =
+                NotificationDTOInput.builder()
+                        .userId(updatedOrder.getUserId())
+                        .orderId(updatedOrder.getId())
+                        .tipo("ORDER_CANCELLATION_REQUESTED")
+                        .messaggio(
+                                "Richiesta di cancellazione ricevuta per l'ordine "
+                                        + updatedOrder.getCodOrder()
+                        )
+                        .build();
+
+        sendNotificationSafely(notificationDTOInput);
+        return convertToDTO(updatedOrder);
+    }
+
     @Transactional
     public void deleteOrder(UUID id) {
 
