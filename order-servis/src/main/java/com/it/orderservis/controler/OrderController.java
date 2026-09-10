@@ -47,6 +47,20 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    @GetMapping("/{codOrder}")
+    public ResponseEntity<OrderDTOOutput> findByCodOrder(@PathVariable String codOrder){
+        return ResponseEntity.ok(
+                orderService.findByCodOrder(codOrder)
+        );
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<OrderDTOOutput>> findByUserId(@PathVariable UUID userId){
+        return ResponseEntity.ok(
+                orderService.findByUserId(userId)
+        );
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(
             @PathVariable UUID id) {

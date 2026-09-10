@@ -307,6 +307,27 @@ public class OrderService {
                 .build();
     }
 
+    public OrderDTOOutput findByCodOrder(String codOrder){
+
+        Order order = orderRepository.findByCodOrder(codOrder)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Ordine non trovato con codice: " + codOrder
+                        )
+                );
+        return convertToDTO(order);
+    }
+
+    public List<OrderDTOOutput> findByUserId(UUID userId){
+
+        userClient.findUserById(userId);
+
+        return orderRepository.findByUserId(userId)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
     private OrderItemDTOOutput convertItemToDTO(
             OrderItem item) {
 
