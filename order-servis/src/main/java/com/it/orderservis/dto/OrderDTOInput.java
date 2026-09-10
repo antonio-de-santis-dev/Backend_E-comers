@@ -26,4 +26,7 @@ public class OrderDTOInput {
 
     @NotEmpty(message = "campo obbligatorio")
     private List<@Valid OrderItemDTOInput> items;
+
+    @Valid
+    private ShippingDTOInput shipping;
 }

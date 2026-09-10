@@ -54,17 +54,45 @@ public class OrderService {
                 .stato(OrderStatus.CREATED)
                 .dataCreazione(LocalDateTime.now())
                 .build();
-        //2.1. Creo lo Shipping con snapshot dei dati
-        Shipping shipping = Shipping.builder()
-                .emailContatto(user.getEmail())
-                .indirizzoSpedizione(user.getIndirizzoSpedizione())
-                .cap(user.getCap())
-                .citta(user.getCitta())
-                .provincia(user.getProvincia())
-                .regione(user.getRegione())
-                .paese(user.getPaese())
-                .order(order)
-                .build();
+        //2.1. Creo lo Shipping con snapshot dei dati o inseriti al momento o recuperati da user
+
+        String indirizzoDefault = user.getIndirizzoSpedizione();
+
+        if (indirizzoDefault == null || indirizzoDefault.isBlank()) {
+            indirizzoDefault = user.getIndirizzoResidenza();
+        }
+
+        Shipping shipping;
+
+        if (input.getShipping() != null) {
+
+            ShippingDTOInput shippingInput = input.getShipping();
+
+            shipping = Shipping.builder()
+                    .emailContatto(shippingInput.getEmailContatto())
+                    .indirizzoSpedizione(shippingInput.getIndirizzoSpedizione())
+                    .cap(shippingInput.getCap())
+                    .citta(shippingInput.getCitta())
+                    .provincia(shippingInput.getProvincia())
+                    .regione(shippingInput.getRegione())
+                    .paese(shippingInput.getPaese())
+                    .order(order)
+                    .build();
+
+        } else {
+
+            shipping = Shipping.builder()
+                    .emailContatto(user.getEmail())
+                    .indirizzoSpedizione(user.getIndirizzoSpedizione())
+                    .cap(user.getCap())
+                    .citta(user.getCitta())
+                    .provincia(user.getProvincia())
+                    .regione(user.getRegione())
+                    .paese(user.getPaese())
+                    .order(order)
+                    .build();
+        }
+
 
         //2.2. Collego Shipping a Order
         order.setShipping(shipping);
