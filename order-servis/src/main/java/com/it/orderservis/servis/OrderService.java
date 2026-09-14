@@ -10,6 +10,7 @@ import com.it.orderservis.entity.OrderItem;
 import com.it.orderservis.entity.OrderStatus;
 import com.it.orderservis.entity.Shipping;
 import com.it.orderservis.exception.InsufficientStockException;
+import com.it.orderservis.exception.InvalidOrderStateException;
 import com.it.orderservis.exception.ResourceNotFoundException;
 import com.it.orderservis.exception.ResourceAlreadyExistsException;
 import com.it.orderservis.repository.OrderRepository;
@@ -281,7 +282,7 @@ public class OrderService {
                                 "Ordine non trovato con id: " + orderId
                         ));
         if (order.getStato() != OrderStatus.PAID){
-            throw new IllegalStateException(
+            throw new InvalidOrderStateException(
                     "La cancellazione può essere richiesta solo per ordini PAID"
             );
         }
@@ -362,6 +363,8 @@ public class OrderService {
                 .totale(order.getTotale())
                 .stato(order.getStato())
                 .dataCreazione(order.getDataCreazione())
+                .cancelazioneRichiesta(order.getCancelazioneRichiesta())
+                .dataRichiestaCancellazione(order.getDataRichiestaCancellazione())
                 .items(items)
                 .shipping(shippingDTO)
                 .build();

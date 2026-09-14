@@ -58,14 +58,14 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    @GetMapping("/{codOrder}")
+    @GetMapping("/cod/{codOrder}")
     public ResponseEntity<OrderDTOOutput> findByCodOrder(@PathVariable String codOrder){
         return ResponseEntity.ok(
                 orderService.findByCodOrder(codOrder)
         );
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<OrderDTOOutput>> findByUserId(@PathVariable UUID userId){
         return ResponseEntity.ok(
                 orderService.findByUserId(userId)

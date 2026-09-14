@@ -23,6 +23,8 @@ public class OrderDTOOutput {
     private BigDecimal totale;
     private OrderStatus stato;
     private LocalDateTime dataCreazione;
+    private Boolean cancelazioneRichiesta;
+    private LocalDateTime dataRichiestaCancellazione;
     private List<OrderItemDTOOutput> items;
     private ShippingDTOOutput shipping;
 

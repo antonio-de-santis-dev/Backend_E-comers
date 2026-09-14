@@ -33,7 +33,7 @@ public class UserAccountController {
         return ResponseEntity.ok(userAccountServis.findById(id));
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/user/{username}")
     public ResponseEntity<UserAccountDTOOutput> findByUsername (@PathVariable String username){
         return ResponseEntity.ok(userAccountServis.findByUsername(username));
     }
