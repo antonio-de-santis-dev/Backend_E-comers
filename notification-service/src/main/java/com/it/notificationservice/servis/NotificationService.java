@@ -72,6 +72,15 @@ public class NotificationService {
 
         return convertToDTO(notification);
     }
+
+    @Transactional(readOnly = true)
+    public List<NotificationDTOOutput> getNotificationsByUserId(UUID userId){
+        return notificationRepository.findByUserId(userId)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
     @Transactional
     public NotificationDTOOutput updateNotification( UUID id, NotificationDTOInput input) {
 

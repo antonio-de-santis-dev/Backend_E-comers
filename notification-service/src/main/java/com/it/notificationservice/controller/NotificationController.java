@@ -50,7 +50,15 @@ public class NotificationController {
         return ResponseEntity.ok(notification);
     }
 
-    @PutMapping("/{id}")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<NotificationDTOOutput>> getNotificationsByUserId(@PathVariable UUID userId){
+        return ResponseEntity.ok(
+                notificationService.getNotificationsByUserId(userId)
+        );
+    }
+
+
+            @PutMapping("/{id}")
     public ResponseEntity<NotificationDTOOutput>
     updateNotification(
             @PathVariable UUID id,
