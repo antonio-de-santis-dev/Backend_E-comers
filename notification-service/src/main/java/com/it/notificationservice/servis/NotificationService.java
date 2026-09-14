@@ -81,6 +81,15 @@ public class NotificationService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<NotificationDTOOutput> getNotificationsByOrderId(UUID orderId){
+        return notificationRepository
+                .findByOrderIdOrderByDataCreazioneDesc(orderId)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
     @Transactional
     public NotificationDTOOutput updateNotification( UUID id, NotificationDTOInput input) {
 
