@@ -75,7 +75,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<NotificationDTOOutput> getNotificationsByUserId(UUID userId){
-        return notificationRepository.findByUserId(userId)
+        return notificationRepository.findByUserIdOrderByDataCreazioneDesc(userId)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
