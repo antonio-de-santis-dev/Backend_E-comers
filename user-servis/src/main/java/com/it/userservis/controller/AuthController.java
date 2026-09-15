@@ -1,6 +1,7 @@
 package com.it.userservis.controller;
 
 import com.it.userservis.dto.LoginDTOInuput;
+import com.it.userservis.dto.LoginDTOOutput;
 import com.it.userservis.entity.UserAccount;
 import com.it.userservis.servis.AuthService;
 import jakarta.validation.Valid;
@@ -19,8 +20,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<UserAccount> login(@Valid @RequestBody LoginDTOInuput input){
-        UserAccount account = authService.login(input);
+    public ResponseEntity<LoginDTOOutput> login(@Valid @RequestBody LoginDTOInuput input){
+        LoginDTOOutput account = authService.login(input);
         return ResponseEntity.ok(account);
     }
 }

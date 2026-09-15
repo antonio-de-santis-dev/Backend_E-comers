@@ -2,6 +2,7 @@ package com.it.userservis.servis;
 
 
 import com.it.userservis.dto.LoginDTOInuput;
+import com.it.userservis.dto.LoginDTOOutput;
 import com.it.userservis.entity.UserAccount;
 import com.it.userservis.exception.ResourceNotFoundException;
 import com.it.userservis.repository.UserAccountRepository;
@@ -16,7 +17,7 @@ public class AuthService {
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserAccount login(LoginDTOInuput input){
+    public LoginDTOOutput login(LoginDTOInuput input){
 
         UserAccount account = userAccountRepository
                 .findByUsername(input.getUsername())
@@ -32,6 +33,11 @@ public class AuthService {
         if (!passwordCorretta){
             throw new RuntimeException("Credenziali non valide");
         }
-        return account;
+        return LoginDTOOutput.builder()
+                .accountId(account.getId())
+                .userId(account.getUser().getId())
+                .username(account.getUsername())
+                .role(account.getRole())
+                .build();
     }
 }
