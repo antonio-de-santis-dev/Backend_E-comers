@@ -4,6 +4,7 @@ package com.it.userservis.servis;
 import com.it.userservis.dto.LoginDTOInuput;
 import com.it.userservis.dto.LoginDTOOutput;
 import com.it.userservis.entity.UserAccount;
+import com.it.userservis.exception.InvalidCredentialsException;
 import com.it.userservis.exception.ResourceNotFoundException;
 import com.it.userservis.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +22,14 @@ public class AuthService {
 
         UserAccount account = userAccountRepository
                 .findByUsername(input.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Account con username: " + input.getUsername() + "non trovato"
-                ));
-
+                .orElseThrow(() -> new InvalidCredentialsException("Credenziali non valide"));
         boolean passwordCorretta = passwordEncoder.matches(
                 input.getPassword(),
                 account.getPassword()
         );
 
         if (!passwordCorretta){
-            throw new RuntimeException("Credenziali non valide");
+            throw new InvalidCredentialsException("Credenziali non valide");
         }
         return LoginDTOOutput.builder()
                 .accountId(account.getId())
