@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import com.it.orderservis.dto.StockUpdateDTO;
+import com.it.orderservis.exception.ExternalServiceUnavailableException;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.UUID;
 
@@ -21,63 +23,85 @@ public class ProductClient {
 
     public ProductDTOOutput findProductById(UUID productId) {
 
-        return restClient
-                .get()
-                .uri(productServiceUrl + "/api/products/{id}",productId)
-                .retrieve()
-                .onStatus(
-                        status -> status.value() == 404,
-                        (request, response) -> {
-                            throw new ResourceNotFoundException(
-                        "Prodotto con id : ["+productId+"] non torvato"
+        try {
+            return restClient
+                    .get()
+                    .uri(productServiceUrl + "/api/products/{id}", productId)
+                    .retrieve()
+                    .onStatus(
+                            status -> status.value() == 404,
+                            (request, response) -> {
+                                throw new ResourceNotFoundException(
+                                        "Prodotto con id : [" + productId + "] non torvato"
                                 );
                             }
-                )
-                .body(ProductDTOOutput.class);
+                    )
+                    .body(ProductDTOOutput.class);
+        }catch (ResourceAccessException e){
+            throw new ExternalServiceUnavailableException(
+                    "Product Service temporaneamente non disponibile" , e
+            );
+        }
     }
 
     public ProductDTOOutput decreaseStock(UUID productId, Integer quantita){
 
         StockUpdateDTO input = new StockUpdateDTO(quantita);
 
-        return restClient
-                .patch()
-                .uri(
-                        productServiceUrl + "/api/products/{id}/stock/decrease", productId
-                )
-                .body(input)
-                .retrieve()
-                .onStatus(
-                        status -> status.value() == 404,
-                        (request, response) -> {
-                            throw new ResourceNotFoundException(
-                                    "Prodotto con id [" + productId + "] non trovato"
+        try {
+            return restClient
+                    .patch()
+                    .uri(
+                            productServiceUrl + "/api/products/{id}/stock/decrease", productId
+                    )
+                    .body(input)
+                    .retrieve()
+                    .onStatus(
+                            status -> status.value() == 404,
+                            (request, response) -> {
+                                throw new ResourceNotFoundException(
+                                        "Prodotto con id [" + productId + "] non trovato"
                                 );
                             }
-                        )
-                .body(ProductDTOOutput.class);
+                    )
+                    .body(ProductDTOOutput.class);
+        }catch (ResourceAccessException e){
+            throw new ExternalServiceUnavailableException(
+                    "Product Service temporaneamente non disponibile", e
+            );
+        }
     }
 
     public ProductDTOOutput increaseStock(UUID productId, Integer quantita) {
 
         StockUpdateDTO input = new StockUpdateDTO(quantita);
 
-        return restClient
-                .patch()
-                .uri(
-                        productServiceUrl + "/api/products/{id}/stock/increase",
-                        productId
-                )
-                .body(input)
-                .retrieve()
-                .onStatus(
-                        status -> status.value() == 404,
-                        (request, response) -> {
-                            throw new ResourceNotFoundException(
-                                    "Prodotto con id (" + productId + ") non trovato"
-                            );
-                        }
-                )
-                .body(ProductDTOOutput.class);
+        try {
+
+            return restClient
+                    .patch()
+                    .uri(
+                            productServiceUrl + "/api/products/{id}/stock/increase",
+                            productId
+                    )
+                    .body(input)
+                    .retrieve()
+                    .onStatus(
+                            status -> status.value() == 404,
+                            (request, response) -> {
+                                throw new ResourceNotFoundException(
+                                        "Prodotto con id (" + productId + ") non trovato"
+                                );
+                            }
+                    )
+                    .body(ProductDTOOutput.class);
+
+        } catch (ResourceAccessException ex) {
+
+            throw new ExternalServiceUnavailableException(
+                    "Product Service temporaneamente non disponibile",
+                    ex
+            );
+        }
     }
 }
