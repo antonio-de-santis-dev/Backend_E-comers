@@ -1,5 +1,6 @@
 package com.it.orderservis.configuration;
 
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -11,7 +12,8 @@ import java.time.Duration;
 public class RestClientConfig {
 
     @Bean
-    public RestClient restClient(){
+    @LoadBalanced
+    public RestClient.Builder restClientBuilder(){
 
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 
@@ -19,7 +21,15 @@ public class RestClientConfig {
         requestFactory.setReadTimeout(Duration.ofSeconds(5));
 
         return RestClient.builder()
-                .requestFactory(requestFactory)
-                .build();
+                .requestFactory(requestFactory);
+    }
+
+
+
+    @Bean
+    public RestClient restClient(  @LoadBalanced RestClient.Builder restClientBuilder){
+
+
+        return restClientBuilder.build();
     }
 }
