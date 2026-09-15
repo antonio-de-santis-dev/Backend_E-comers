@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import com.it.orderservis.exception.ExternalServiceUnavailableException;
+import org.springframework.web.client.ResourceAccessException;
 
 @Component
 @RequiredArgsConstructor
@@ -16,14 +18,24 @@ public class PaymentClient {
     @Value("${payment-service.url}")
     private String paymentServiceUrl;
 
-    public PaymentDTOOutput createPayment (PaymentDTOInput input){
+    public PaymentDTOOutput createPayment(PaymentDTOInput input) {
 
-        return restClient
-                .post()
-                .uri(paymentServiceUrl + "/api/payments")
-                .body(input)
-                .retrieve()
-                .body(PaymentDTOOutput.class);
+        try {
+
+            return restClient
+                    .post()
+                    .uri(paymentServiceUrl + "/api/payments")
+                    .body(input)
+                    .retrieve()
+                    .body(PaymentDTOOutput.class);
+
+        } catch (ResourceAccessException ex) {
+
+            throw new ExternalServiceUnavailableException(
+                    "Payment Service temporaneamente non disponibile",
+                    ex
+            );
+        }
     }
 
 }
