@@ -10,6 +10,7 @@ import com.it.userservis.exception.ResourceNotFoundException;
 import com.it.userservis.repository.UserAccountRepository;
 import com.it.userservis.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class UserAccountServis {
 
     private final UserAccountRepository userAccountRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserAccountDTOOutput creaAccount(UserAccountDTOInput input){
@@ -41,7 +43,7 @@ public class UserAccountServis {
 
         UserAccount account = UserAccount.builder()
                 .username(input.getUsername())
-                .password(input.getPassword())
+                .password(passwordEncoder.encode(input.getPassword()))
                 .role(Role.USER)
                 .user(user)
                 .build();
