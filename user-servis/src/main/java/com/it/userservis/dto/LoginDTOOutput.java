@@ -21,4 +21,6 @@ public class LoginDTOOutput {
     private String username;
 
     private Role role;
+
+    private String token;
 }
