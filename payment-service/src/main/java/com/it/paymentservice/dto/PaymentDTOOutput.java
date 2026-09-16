@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -22,5 +23,7 @@ public class PaymentDTOOutput {
     private String metodoPagamento;
     private PaymentStatus stato;
     private LocalDateTime dataCreazione;
+    private Boolean cancelazioneRichiesta;
+    private LocalDateTime dataRichiestaCancellazione;
 
 }

@@ -98,6 +98,8 @@ public class PaymentServis {
                 .metodoPagamento(payment.getMetodoPagamento())
                 .stato(payment.getStato())
                 .dataCreazione(payment.getDataCreazione())
+                .cancelazioneRichiesta(payment.getCancelazioneRichiesta())
+                .dataRichiestaCancellazione(payment.getDataRichiestaCancellazione())
                 .build();
     }
 }

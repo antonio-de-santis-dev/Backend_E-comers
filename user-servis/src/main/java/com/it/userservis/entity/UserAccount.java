@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(
@@ -34,6 +35,12 @@ public class UserAccount {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean cancelazioneRichiesta = false;
+
+    private LocalDateTime dataRichiestaCancellazione;
 
     @OneToOne(optional = false)
     @JoinColumn(

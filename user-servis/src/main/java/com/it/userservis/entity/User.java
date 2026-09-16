@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -48,4 +49,9 @@ private String regione;
     @Column(nullable = false, length = 100)
 private String paese;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean cancelazioneRichiesta = false;
+
+    private LocalDateTime dataRichiestaCancellazione;
 }

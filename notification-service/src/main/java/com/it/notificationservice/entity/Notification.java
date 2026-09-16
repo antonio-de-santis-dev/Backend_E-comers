@@ -38,4 +38,10 @@ public class Notification {
 
     @Column(nullable = false)
     private LocalDateTime dataCreazione;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean cancelazioneRichiesta = false;
+
+    private LocalDateTime dataRichiestaCancellazione;
 }

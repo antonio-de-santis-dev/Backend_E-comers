@@ -4,8 +4,8 @@ package com.it.userservis.servis;
 import com.it.userservis.dto.LoginDTOInuput;
 import com.it.userservis.dto.LoginDTOOutput;
 import com.it.userservis.entity.UserAccount;
+import com.it.userservis.exception.AccountDisabledException;
 import com.it.userservis.exception.InvalidCredentialsException;
-import com.it.userservis.exception.ResourceNotFoundException;
 import com.it.userservis.repository.UserAccountRepository;
 import com.it.userservis.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,12 @@ public class AuthService {
         UserAccount account = userAccountRepository
                 .findByUsername(input.getUsername())
                 .orElseThrow(() -> new InvalidCredentialsException("Credenziali non valide"));
+
+        if (Boolean.TRUE.equals(account.getCancelazioneRichiesta())){
+            throw new AccountDisabledException(
+                    "L'Account non e piu abilitato"
+            );
+        }
 
         boolean passwordCorretta = passwordEncoder.matches(
                 input.getPassword(),

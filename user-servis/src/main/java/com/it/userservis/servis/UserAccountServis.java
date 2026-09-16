@@ -87,6 +87,8 @@ public class UserAccountServis {
                 .userId(account.getUser().getId())
                 .username(account.getUsername())
                 .role(account.getRole())
+                .cancelazioneRichiesta(account.getCancelazioneRichiesta())
+                .dataRichiestaCancellazione(account.getDataRichiestaCancellazione())
                 .build();
     }
 

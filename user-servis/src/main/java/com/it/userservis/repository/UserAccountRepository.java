@@ -16,4 +16,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, UUID> 
 
     //evitare che lo stesso User abbia più account.
     boolean existsByUserId(UUID userId);
+
+    Optional <UserAccount> findByUserId(UUID userId);
+
 }

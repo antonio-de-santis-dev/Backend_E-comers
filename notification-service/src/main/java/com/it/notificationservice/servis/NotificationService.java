@@ -135,6 +135,8 @@ public class NotificationService {
                 .messaggio(notification.getMessaggio())
                 .stato(notification.getStato())
                 .dataCreazione(notification.getDataCreazione())
+                .cancelazioneRichiesta(notification.getCancelazioneRichiesta())
+                .dataRichiestaCancellazione(notification.getDataRichiestaCancellazione())
                 .build();
     }
 }

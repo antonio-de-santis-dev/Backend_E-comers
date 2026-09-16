@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -25,5 +26,7 @@ public class UserDTOOutput {
     private String provincia;
     private String regione;
     private String paese;
+    private Boolean cancelazioneRichiesta;
+    private LocalDateTime dataRichiestaCancellazione;
 
 }

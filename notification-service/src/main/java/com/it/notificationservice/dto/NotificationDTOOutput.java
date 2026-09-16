@@ -21,4 +21,6 @@ public class NotificationDTOOutput {
     private String messaggio;
     private String stato;
     private LocalDateTime dataCreazione;
+    private Boolean cancelazioneRichiesta;
+    private LocalDateTime dataRichiestaCancellazione;
 }

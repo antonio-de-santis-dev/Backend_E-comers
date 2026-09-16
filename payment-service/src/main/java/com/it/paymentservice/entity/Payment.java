@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
@@ -36,4 +37,10 @@ public class Payment {
 
     @Column(nullable = false)
     private LocalDateTime dataCreazione;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean cancelazioneRichiesta = false;
+
+    private LocalDateTime dataRichiestaCancellazione;
 }

@@ -9,7 +9,10 @@ import com.it.userservis.repository.UserRepository;
 import com.it.userservis.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.it.userservis.entity.UserAccount;
+import com.it.userservis.repository.UserAccountRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +22,7 @@ import java.util.UUID;
 public class UserServis {
 
     private final UserRepository userRepository;
+    private final UserAccountRepository userAccountRepository;
 
 
     @Transactional
@@ -79,20 +83,44 @@ public class UserServis {
     @Transactional(readOnly = true)
     public List<UserDTOOutput> findAll() {
 
-        return userRepository.findAll()
+        return userRepository.findAllByCancelazioneRichiestaFalse()
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
+
     @Transactional(readOnly = true)
     public UserDTOOutput findById(UUID id) {
         User user =  userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Utente_non_trovato_nel_sistema_id= "+id));
         return convertToDTO(user);
     }
+
+    @Transactional(readOnly = true)
+    public List<UserDTOOutput> findAllAdmin() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTOOutput findByIdAdmin(UUID id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Utente non trovato nel sistema id = " + id
+                        )
+                );
+
+        return convertToDTO(user);
+    }
+
     @Transactional
     public UserDTOOutput update(UUID id,UserDTOInput input) {
-        User user = userRepository.findById(id)
+        User user = userRepository.findByIdAndCancelazioneRichiestaFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Utente_non_trovato_nel_sistema_id= "+id));;
 
         user.setNome(input.getNome());
@@ -113,10 +141,41 @@ public class UserServis {
     }
 
     @Transactional
+    public UserDTOOutput richiestaCancellazione(UUID id){
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Utente con id: ["+id+"] non trovato"
+                        ));
+
+        if (Boolean.TRUE.equals(user.getCancelazioneRichiesta())){
+            return convertToDTO(user);
+        }
+
+        user.setCancelazioneRichiesta(true);
+        user.setDataRichiestaCancellazione(LocalDateTime.now());
+
+        userAccountRepository.findByUserId(id)
+                .ifPresent( account -> {
+                    account.setCancelazioneRichiesta(true);
+                    account.setDataRichiestaCancellazione(LocalDateTime.now());
+                    userAccountRepository.save(account);
+                        });
+
+        User updatedUser = userRepository.save(user);
+
+        return convertToDTO(updatedUser);
+    }
+
+    @Transactional
     public void delete(UUID id) {
 
         User user =  userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato nel sistema id = "+id));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Utente con id: ["+id+"] non trovato"
+                        ));
 
         userRepository.delete(user);
     }
@@ -145,6 +204,8 @@ public class UserServis {
                 .provincia(user.getProvincia())
                 .regione(user.getRegione())
                 .paese(user.getPaese())
+                .cancelazioneRichiesta(user.getCancelazioneRichiesta())
+                .dataRichiestaCancellazione(user.getDataRichiestaCancellazione())
                 .build();
     }
 }

@@ -55,6 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
                     .orElse(null);
 
             if (account != null
+                    && !Boolean.TRUE.equals(account.getCancelazioneRichiesta())
                     && jwtService.isTokenValid(token, account.getUsername())) {
 
                 SimpleGrantedAuthority authority =
