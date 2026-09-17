@@ -54,7 +54,7 @@ public class NotificationService {
     @Transactional(readOnly = true)
     public List<NotificationDTOOutput> getAllNotifications() {
 
-        return notificationRepository.findAll()
+        return notificationRepository.findAllByCancelazioneRichiestaFalse()
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -63,7 +63,7 @@ public class NotificationService {
     public NotificationDTOOutput getNotificationById(UUID id) {
 
         Notification notification =
-                notificationRepository.findById(id)
+                notificationRepository.findByIdAndCancelazioneRichiestaFalse(id)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Notifica non trovata: " + id
@@ -75,7 +75,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<NotificationDTOOutput> getNotificationsByUserId(UUID userId){
-        return notificationRepository.findByUserIdOrderByDataCreazioneDesc(userId)
+        return notificationRepository.findByUserIdAndCancelazioneRichiestaFalseOrderByDataCreazioneDesc(userId)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -84,7 +84,7 @@ public class NotificationService {
     @Transactional(readOnly = true)
     public List<NotificationDTOOutput> getNotificationsByOrderId(UUID orderId){
         return notificationRepository
-                .findByOrderIdOrderByDataCreazioneDesc(orderId)
+                .findByOrderIdAndCancelazioneRichiestaFalseOrderByDataCreazioneDesc(orderId)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
