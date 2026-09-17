@@ -169,13 +169,39 @@ public class UserServis {
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void deleteAfterCancellationRequest(UUID id) {
 
-        User user =  userRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                                "Utente con id: ["+id+"] non trovato"
-                        ));
+                                "Utente con id: [" + id + "] non trovato"
+                        )
+                );
+
+        if (!Boolean.TRUE.equals(user.getCancelazioneRichiesta())) {
+            throw new IllegalStateException(
+                    "L'utente non ha una richiesta di cancellazione attiva"
+            );
+        }
+
+        userAccountRepository.findByUserId(id)
+                .ifPresent(userAccountRepository::delete);
+
+        userRepository.delete(user);
+    }
+
+    @Transactional
+    public void forceDelete(UUID id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Utente con id: [" + id + "] non trovato"
+                        )
+                );
+
+        userAccountRepository.findByUserId(id)
+                .ifPresent(userAccountRepository::delete);
 
         userRepository.delete(user);
     }

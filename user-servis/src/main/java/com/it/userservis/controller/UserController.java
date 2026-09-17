@@ -83,9 +83,23 @@ public class UserController {
         );
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id){
-        userServis.delete(id);
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<Void> deleteAfterCancellationRequest(
+            @PathVariable UUID id
+    ) {
+
+        userServis.deleteAfterCancellationRequest(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/admin/force/{id}")
+    public ResponseEntity<Void> forceDelete(
+            @PathVariable UUID id
+    ) {
+
+        userServis.forceDelete(id);
+
         return ResponseEntity.noContent().build();
     }
 
