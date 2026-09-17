@@ -79,11 +79,22 @@ public class OrderController {
         );
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(
-            @PathVariable UUID id) {
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<Void> deleteAfterCancellationRequest(
+            @PathVariable UUID id
+    ) {
 
-        orderService.deleteOrder(id);
+        orderService.deleteAfterCancellationRequest(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/admin/force/{id}")
+    public ResponseEntity<Void> forceDelete(
+            @PathVariable UUID id
+    ) {
+
+        orderService.forceDelete(id);
 
         return ResponseEntity.noContent().build();
     }

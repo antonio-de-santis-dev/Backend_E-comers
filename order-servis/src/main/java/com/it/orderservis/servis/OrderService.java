@@ -314,11 +314,32 @@ public class OrderService {
     }
 
     @Transactional
-    public void deleteOrder(UUID id) {
+    public void deleteAfterCancellationRequest(UUID id) {
 
         Order order = orderRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Ordine non trovato: " + id)
+                        new ResourceNotFoundException(
+                                "Ordine non trovato: " + id
+                        )
+                );
+
+        if (!Boolean.TRUE.equals(order.getCancelazioneRichiesta())) {
+            throw new InvalidOrderStateException(
+                    "L'ordine non ha una richiesta di cancellazione attiva"
+            );
+        }
+
+        orderRepository.delete(order);
+    }
+
+    @Transactional
+    public void forceDelete(UUID id) {
+
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Ordine non trovato: " + id
+                        )
                 );
 
         orderRepository.delete(order);
