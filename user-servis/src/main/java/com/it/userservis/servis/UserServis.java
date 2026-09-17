@@ -106,18 +106,6 @@ public class UserServis {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public UserDTOOutput findByIdAdmin(UUID id) {
-
-        User user = userRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Utente non trovato nel sistema id = " + id
-                        )
-                );
-
-        return convertToDTO(user);
-    }
 
     @Transactional
     public UserDTOOutput update(UUID id,UserDTOInput input) {

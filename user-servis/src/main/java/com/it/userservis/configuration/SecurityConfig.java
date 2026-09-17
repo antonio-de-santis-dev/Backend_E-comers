@@ -45,10 +45,10 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
+                        //PUBBLICI GUEST
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        .requestMatchers(
-                                HttpMethod.POST,
+                        .requestMatchers(HttpMethod.POST,
                                 "/api/users",
                                 "/api/users/guest"
                         ).permitAll()
@@ -58,16 +58,23 @@ public class SecurityConfig {
                                 "/api/user-accounts"
                         ).permitAll()
 
+                        //SOLO ADMIN
                         .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/users/admin",
+                                HttpMethod.DELETE,
                                 "/api/users/admin/**"
                         ).hasRole("ADMIN")
 
+                        //USER oppure ADMIN autenticati
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/users/cancellazione-request/{id}"
+                        ).authenticated()
+
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/users/{id}"
-                        ).permitAll()
+                                "/api/user-accounts/{id}",
+                                "/api/user-accounts/user/{username}"
+                        ).authenticated()
 
                         .anyRequest().authenticated()
                 )

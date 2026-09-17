@@ -60,15 +60,6 @@ public class UserController {
         );
     }
 
-    @GetMapping("/admin/{id}")
-    public ResponseEntity<UserDTOOutput> findByIdAdmin(
-            @PathVariable UUID id
-    ) {
-        return ResponseEntity.ok(
-                userServis.findByIdAdmin(id)
-        );
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<UserDTOOutput>  update (@PathVariable UUID id , @Valid @RequestBody UserDTOInput dto){
         return ResponseEntity.ok(
