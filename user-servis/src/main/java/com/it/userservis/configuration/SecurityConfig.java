@@ -64,6 +64,11 @@ public class SecurityConfig {
                                 "/api/users/admin/**"
                         ).hasRole("ADMIN")
 
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/users/{id}"
+                        ).permitAll()
+
                         .anyRequest().authenticated()
                 )
 

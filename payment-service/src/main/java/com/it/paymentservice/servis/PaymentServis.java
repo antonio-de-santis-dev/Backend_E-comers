@@ -43,7 +43,7 @@ public class PaymentServis {
     @Transactional(readOnly = true)
     public List<PaymentDTOOutput> getAllPayments() {
 
-        return paymentRepository.findAll()
+        return paymentRepository.findAllByCancelazioneRichiestaFalse()
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -51,13 +51,36 @@ public class PaymentServis {
     @Transactional(readOnly = true)
     public PaymentDTOOutput getPaymentById(UUID id) {
 
-        Payment payment = paymentRepository.findById(id)
+        Payment payment = paymentRepository.findByIdAndCancelazioneRichiestaFalse(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Pagamento non trovato: " + id)
                 );
 
         return convertToDTO(payment);
     }
+
+    @Transactional(readOnly = true)
+    public List<PaymentDTOOutput> getAllPaymentsAdmin() {
+
+        return paymentRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public PaymentDTOOutput getPaymentByIdAdmin(UUID id) {
+
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Pagamento non trovato: " + id
+                        )
+                );
+
+        return convertToDTO(payment);
+    }
+
     @Transactional
     public PaymentDTOOutput updatePayment( UUID id, PaymentDTOInput input) {
 
@@ -78,6 +101,29 @@ public class PaymentServis {
 
         return convertToDTO(updatedPayment);
     }
+
+    @Transactional
+    public PaymentDTOOutput richiestaCancellazione(UUID id) {
+
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Pagamento non trovato: " + id
+                        )
+                );
+
+        if (Boolean.TRUE.equals(payment.getCancelazioneRichiesta())) {
+            return convertToDTO(payment);
+        }
+
+        payment.setCancelazioneRichiesta(true);
+        payment.setDataRichiestaCancellazione(LocalDateTime.now());
+
+        Payment updatedPayment = paymentRepository.save(payment);
+
+        return convertToDTO(updatedPayment);
+    }
+
     @Transactional
     public void deletePayment(UUID id) {
 

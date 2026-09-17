@@ -50,6 +50,24 @@ public class PaymentController {
         return ResponseEntity.ok(payment);
     }
 
+    @GetMapping("/admin")
+    public ResponseEntity<List<PaymentDTOOutput>> getAllPaymentsAdmin() {
+
+        return ResponseEntity.ok(
+                paymentService.getAllPaymentsAdmin()
+        );
+    }
+
+    @GetMapping("/admin/{id}")
+    public ResponseEntity<PaymentDTOOutput> getPaymentByIdAdmin(
+            @PathVariable UUID id
+    ) {
+
+        return ResponseEntity.ok(
+                paymentService.getPaymentByIdAdmin(id)
+        );
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<PaymentDTOOutput> updatePayment(
             @PathVariable UUID id,
@@ -59,6 +77,15 @@ public class PaymentController {
                 paymentService.updatePayment(id, input);
 
         return ResponseEntity.ok(payment);
+    }
+
+    @PatchMapping("/cancellazione-request/{id}")
+    public ResponseEntity<PaymentDTOOutput> richiediCancellazione(
+            @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(
+                paymentService.richiestaCancellazione(id)
+        );
     }
 
     @DeleteMapping("/{id}")
