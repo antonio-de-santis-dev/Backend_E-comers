@@ -103,10 +103,20 @@ public class NotificationController {
     }
 
     @DeleteMapping("/admin/{id}")
-    public ResponseEntity<Void> deleteNotification(
+    public ResponseEntity<Void> deleteAfterCancellationRequest(
             @PathVariable UUID id) {
 
-        notificationService.deleteNotification(id);
+        notificationService.deleteAfterCancellationRequest(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/admin/force/{id}")
+    public ResponseEntity<Void> forceDelete(
+            @PathVariable UUID id
+    ) {
+
+        notificationService.forceDelete(id);
 
         return ResponseEntity.noContent().build();
     }

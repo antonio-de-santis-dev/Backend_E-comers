@@ -159,7 +159,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public void deleteNotification(UUID id) {
+    public void deleteAfterCancellationRequest(UUID id) {
 
         Notification notification =
                 notificationRepository.findById(id)
@@ -174,6 +174,20 @@ public class NotificationService {
                     "La notifica non ha una richiesta di cancellazione"
             );
         }
+
+        notificationRepository.delete(notification);
+    }
+
+    @Transactional
+    public void forceDelete(UUID id) {
+
+        Notification notification =
+                notificationRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Notifica non trovata: " + id
+                                )
+                        );
 
         notificationRepository.delete(notification);
     }
