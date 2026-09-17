@@ -78,6 +78,15 @@ public class NotificationController {
         return ResponseEntity.ok(notification);
     }
 
+    @PatchMapping("/cancellazione-request/{id}")
+    public ResponseEntity<NotificationDTOOutput> richiediCancellazione(
+            @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(
+                notificationService.richiestaCancellazione(id)
+        );
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNotification(
             @PathVariable UUID id) {

@@ -111,6 +111,30 @@ public class NotificationService {
 
         return convertToDTO(updatedNotification);
     }
+
+    @Transactional
+    public NotificationDTOOutput richiestaCancellazione(UUID id) {
+
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Notifica non trovata: " + id
+                        )
+                );
+
+        if (Boolean.TRUE.equals(notification.getCancelazioneRichiesta())) {
+            return convertToDTO(notification);
+        }
+
+        notification.setCancelazioneRichiesta(true);
+        notification.setDataRichiestaCancellazione(LocalDateTime.now());
+
+        Notification updatedNotification =
+                notificationRepository.save(notification);
+
+        return convertToDTO(updatedNotification);
+    }
+
     @Transactional
     public void deleteNotification(UUID id) {
 
