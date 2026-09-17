@@ -65,6 +65,21 @@ public class NotificationController {
         );
     }
 
+    @GetMapping("/admin")
+    public ResponseEntity<List<NotificationDTOOutput>> getAllNotificationsAdmin() {
+        return ResponseEntity.ok(
+                notificationService.getAllNotificationsAdmin()
+        );
+    }
+
+    @GetMapping("/admin/{id}")
+    public ResponseEntity<NotificationDTOOutput> getNotificationByIdAdmin(
+            @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(
+                notificationService.getNotificationByIdAdmin(id)
+        );
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<NotificationDTOOutput>

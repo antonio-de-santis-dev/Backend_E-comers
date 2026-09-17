@@ -90,6 +90,28 @@ public class NotificationService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<NotificationDTOOutput> getAllNotificationsAdmin() {
+
+        return notificationRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public NotificationDTOOutput getNotificationByIdAdmin(UUID id) {
+
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Notifica non trovata: " + id
+                        )
+                );
+
+        return convertToDTO(notification);
+    }
+
     @Transactional
     public NotificationDTOOutput updateNotification( UUID id, NotificationDTOInput input) {
 
