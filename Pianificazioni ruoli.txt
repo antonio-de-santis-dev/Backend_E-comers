@@ -1,0 +1,34 @@
+
+Pianificazioni ruoli
+
+Servizio : user-servis
+
+ADMIN:
+
+- findAll GET /api/users ()Lista completa utenti)
+
+-
+
+
+USER (questi metodi possono essere usati anche da utenti con ruolo  ADMIN):
+
+- findById GET /api/users/{id} (utente puo leggere le informazioni del prprio profilo, o solo per ADMIN cercare un profilo per Id) 
+
+- update POST api/user/{id} (Utentye puop modificare solo il suo profilo e ADMIN puo modificare tuittii profili tramite ID)
+
+-findByID GET /api/user-accounts/{id} (Dati account personali)
+
+- findByUsername GET /api/user-accouts/user/{username} (Ricerca del account autenticato per username)
+
+
+GUES:
+
+- login POST /api/auth/login (Serve per autenticarsi)
+
+- create POST /api/users (registrazione nuovo utente)
+
+- resolveGuest POST /api/users/guest (Checkout guest, niente account)
+
+- createAccount POST /api/user-accounts (Completa la registrazione creando username e password per il momento e publico)
+
+
