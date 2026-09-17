@@ -3,6 +3,7 @@ package com.it.notificationservice.servis;
 import com.it.notificationservice.dto.NotificationDTOInput;
 import com.it.notificationservice.dto.NotificationDTOOutput;
 import com.it.notificationservice.entity.Notification;
+import com.it.notificationservice.exception.InvalidNotificationStateException;
 import com.it.notificationservice.exception.ResourceNotFoundException;
 import com.it.notificationservice.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -167,6 +168,12 @@ public class NotificationService {
                                         "Notifica non trovata: " + id
                                 )
                         );
+
+        if (!Boolean.TRUE.equals(notification.getCancelazioneRichiesta())) {
+            throw new InvalidNotificationStateException(
+                    "La notifica non ha una richiesta di cancellazione"
+            );
+        }
 
         notificationRepository.delete(notification);
     }

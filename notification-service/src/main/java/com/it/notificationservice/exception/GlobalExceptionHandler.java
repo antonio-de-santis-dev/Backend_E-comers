@@ -280,6 +280,30 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
+    @ExceptionHandler(InvalidNotificationStateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidNotificationState(
+            InvalidNotificationStateException exception,
+            HttpServletRequest request
+    ) {
+
+        log.warn(
+                "Operazione non consentita sullo stato della notifica: {} - path: {}",
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(errorResponse);
+    }
 
 
 }

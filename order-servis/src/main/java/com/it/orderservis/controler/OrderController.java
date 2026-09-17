@@ -72,7 +72,7 @@ public class OrderController {
         );
     }
 
-    @PatchMapping("/{id}/cancellation-request")
+    @PatchMapping("cancellation-request/{id}")
     public ResponseEntity<OrderDTOOutput> requestCancellation(@PathVariable UUID id){
         return ResponseEntity.ok(
                 orderService.requestCancellation(id)

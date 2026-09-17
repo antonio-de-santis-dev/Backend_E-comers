@@ -102,7 +102,7 @@ public class NotificationController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     public ResponseEntity<Void> deleteNotification(
             @PathVariable UUID id) {
 
