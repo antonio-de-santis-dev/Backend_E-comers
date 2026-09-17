@@ -88,11 +88,22 @@ public class PaymentController {
         );
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePayment(
-            @PathVariable UUID id) {
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<Void> deleteAfterCancellationRequest(
+            @PathVariable UUID id
+    ) {
 
-        paymentService.deletePayment(id);
+        paymentService.deleteAfterCancellationRequest(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/admin/force/{id}")
+    public ResponseEntity<Void> forceDelete(
+            @PathVariable UUID id
+    ) {
+
+        paymentService.forceDelete(id);
 
         return ResponseEntity.noContent().build();
     }

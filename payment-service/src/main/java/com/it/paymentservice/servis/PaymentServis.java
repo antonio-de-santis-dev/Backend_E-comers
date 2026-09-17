@@ -4,6 +4,7 @@ import com.it.paymentservice.dto.PaymentDTOInput;
 import com.it.paymentservice.dto.PaymentDTOOutput;
 import com.it.paymentservice.entity.Payment;
 import com.it.paymentservice.entity.PaymentStatus;
+import com.it.paymentservice.exception.InvalidPaymentStateException;
 import com.it.paymentservice.exception.ResourceNotFoundException;
 import com.it.paymentservice.payment.PaymentProcessor;
 import com.it.paymentservice.repository.PaymentRepository;
@@ -125,11 +126,32 @@ public class PaymentServis {
     }
 
     @Transactional
-    public void deletePayment(UUID id) {
+    public void deleteAfterCancellationRequest(UUID id) {
 
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Pagamento non trovato: " + id)
+                        new ResourceNotFoundException(
+                                "Pagamento non trovato: " + id
+                        )
+                );
+
+        if (!Boolean.TRUE.equals(payment.getCancelazioneRichiesta())) {
+            throw new InvalidPaymentStateException(
+                    "Il pagamento non ha una richiesta di cancellazione attiva"
+            );
+        }
+
+        paymentRepository.delete(payment);
+    }
+
+    @Transactional
+    public void forceDelete(UUID id) {
+
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Pagamento non trovato: " + id
+                        )
                 );
 
         paymentRepository.delete(payment);
