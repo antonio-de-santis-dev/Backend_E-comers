@@ -42,7 +42,9 @@ public class AuthService {
         }
 
         String token = jwtService.generatoreToken(
-                account.getUsername()
+                account.getUsername(),
+                account.getUser().getId().toString(),
+                account.getRole().name()
         );
 
         return LoginDTOOutput.builder()

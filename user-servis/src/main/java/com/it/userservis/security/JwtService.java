@@ -22,7 +22,7 @@ public class JwtService {
         );
     }
 
-    public String generatoreToken(String username) {
+    public String generatoreToken(String username, String userId, String role) {
 
         Date now = new Date();
         Date expiration = new Date(
@@ -31,6 +31,8 @@ public class JwtService {
 
         return Jwts.builder()
                 .subject(username)
+                .claim("userId",userId)
+                .claim("role",role)
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(getSigngKey())
