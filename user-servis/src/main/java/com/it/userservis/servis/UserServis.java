@@ -1,6 +1,7 @@
 package com.it.userservis.servis;
 
 import com.it.userservis.dto.GuestUserDTOInput;
+import com.it.userservis.exception.InvalidUserStateException;
 import org.springframework.transaction.annotation.Transactional;
 import com.it.userservis.dto.UserDTOInput;
 import com.it.userservis.dto.UserDTOOutput;
@@ -179,7 +180,7 @@ public class UserServis {
                 );
 
         if (!Boolean.TRUE.equals(user.getCancelazioneRichiesta())) {
-            throw new IllegalStateException(
+            throw new InvalidUserStateException(
                     "L'utente non ha una richiesta di cancellazione attiva"
             );
         }
