@@ -1,5 +1,6 @@
 package com.it.userservis.configuration;
 
+import com.it.userservis.security.InternalJwtAuthenticationFilter;
 import com.it.userservis.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final InternalJwtAuthenticationFilter internalJwtAuthenticationFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ObjectMapper objectMapper;
 
@@ -75,6 +77,11 @@ public class SecurityConfig {
                                 "/api/user-accounts/{id}",
                                 "/api/user-accounts/user/{username}"
                         ).authenticated()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/internal/users/**"
+                        ).hasRole("SERVICE_ORDER")
 
                         .anyRequest().authenticated()
                 )
@@ -138,6 +145,11 @@ public class SecurityConfig {
 
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
+
+                .addFilterBefore(
+                        internalJwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
 
                 .addFilterBefore(
                         jwtAuthenticationFilter,

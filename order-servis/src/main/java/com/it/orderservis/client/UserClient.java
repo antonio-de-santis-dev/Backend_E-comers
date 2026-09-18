@@ -11,12 +11,14 @@ import com.it.orderservis.exception.ExternalServiceUnavailableException;
 import org.springframework.web.client.ResourceAccessException;
 
 import java.util.UUID;
+import com.it.orderservis.security.InternalJwtService;
 
 @Component
 @RequiredArgsConstructor
 public class UserClient {
 
     private final RestClient restClient;
+    private final InternalJwtService internalJwtService;
 
     @Value("${user-service.url}")
     private String userServiceUrl;
@@ -25,9 +27,19 @@ public class UserClient {
 
         try {
 
+            String serviceToken =
+                    internalJwtService.generateServiceToken();
+
             return restClient
                     .get()
-                    .uri(userServiceUrl + "/api/users/{id}", userId)
+                    .uri(
+                            userServiceUrl + "/api/internal/users/{id}",
+                            userId
+                    )
+                    .header(
+                            "Authorization",
+                            "Bearer " + serviceToken
+                    )
                     .retrieve()
                     .onStatus(
                             status -> status.value() == 404,

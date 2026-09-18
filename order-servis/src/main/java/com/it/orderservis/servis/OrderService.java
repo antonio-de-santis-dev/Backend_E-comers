@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.it.orderservis.security.SecurityService;
+import org.springframework.security.access.AccessDeniedException;
 
 @Slf4j
 @Service
@@ -38,6 +40,7 @@ public class OrderService {
     private final PaymentClient paymentClient;
     private final UserClient userClient;
     private final NotificationClient notificationClient;
+    private final SecurityService securityService;
 
 
     @Transactional
@@ -270,6 +273,17 @@ public class OrderService {
 
         Order order = orderRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Ordine con id: ("+id +") non trtovato"));
+
+        if (!securityService.isAdmin()){
+            UUID authenticatedUsersId = securityService.getAuthenticatedUserId();
+
+            if (authenticatedUsersId == null || !order.getUserId().equals(authenticatedUsersId)){
+                throw new AccessDeniedException(
+                        "Non puoi accedere a questo ordine"
+                );
+            }
+        }
+
         return convertToDTO(order);
     }
 
@@ -391,6 +405,7 @@ public class OrderService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public OrderDTOOutput findByCodOrder(String codOrder){
 
         Order order = orderRepository.findByCodOrder(codOrder)
@@ -399,6 +414,21 @@ public class OrderService {
                                 "Ordine non trovato con codice: " + codOrder
                         )
                 );
+
+        if (!securityService.isAdmin()) {
+
+            UUID authenticatedUserId =
+                    securityService.getAuthenticatedUserId();
+
+            if (authenticatedUserId == null
+                    || !order.getUserId().equals(authenticatedUserId)) {
+
+                throw new AccessDeniedException(
+                        "Non puoi accedere a questo ordine"
+                );
+            }
+        }
+
         return convertToDTO(order);
     }
 
